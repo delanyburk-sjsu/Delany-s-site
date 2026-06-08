@@ -1,0 +1,2200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Library Task Tracker — Cuesta College</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ── STRAWBERRY MILK PALETTE ── */
+:root{
+  --bg:#FFF5F7;--surface:#FFFFFF;--surface2:#FEF0F3;
+  --border:rgba(244,167,185,0.25);--border2:rgba(244,167,185,0.45);
+  --text:#3D1520;--muted:#A0627A;--faint:#D4A0B5;
+  --pink:#F4A7B9;--pink-dark:#8B2252;--pink-deep:#6B1A2B;
+  --rose:#E8526E;--rose-light:#F9D0DC;
+  --mint:#C8E6DA;--mint-dark:#1A5C3A;
+  --sky:#A8D8EA;--sky-dark:#1A4A6B;
+  --honey:#FFEAA0;--honey-dark:#7A5500;
+  --lavender:#D4B8E0;--lavender-dark:#5C2A70;
+  --gold:#C88A00;--green:#1A6B44;--teal:#1A6B7A;--purple:#5C2A70;
+  --r:14px;--r-lg:20px;--r-xl:28px;--campus:#F4A7B9;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--pink);border-radius:3px;}
+.serif{font-family:'Playfair Display',serif;}.muted{color:var(--muted);}.hidden{display:none!important;}
+ 
+/* ── HEADER ── */
+.header{position:sticky;top:0;z-index:200;background:rgba(255,245,247,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:.85rem 1.5rem;display:flex;align-items:center;gap:1rem;}
+.header-brand{display:flex;align-items:center;gap:.6rem;}
+.header-brand .logo{font-size:1.4rem;}
+.header-brand .name{font-family:'Playfair Display',serif;font-weight:700;font-size:1.05rem;background:linear-gradient(90deg,var(--campus),var(--rose));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:.75rem;}
+.header-ctx{color:var(--muted);font-size:.82rem;}
+.campus-pill{font-size:.72rem;font-weight:700;letter-spacing:.5px;padding:.2rem .65rem;border-radius:50px;border:1px solid var(--campus);color:var(--pink-dark);background:color-mix(in srgb,var(--campus) 20%,transparent);}
+.role-pill{font-size:.7rem;font-weight:700;padding:.15rem .55rem;border-radius:50px;}
+.role-admin{background:#FFE8EC;color:#C0294A;border:1px solid #F4A7B9;}
+.role-staff{background:#EAF6FA;color:#1A4A6B;border:1px solid #A8D8EA;}
+.role-student{background:#EAF8F0;color:#1A6B44;border:1px solid #A0D9BB;}
+.syncing{color:var(--faint);font-size:.75rem;animation:pulse 1.2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+.page{max-width:1100px;margin:0 auto;padding:2rem 1.25rem;}
+ 
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border:none;border-radius:var(--r);padding:.55rem 1.1rem;font-family:inherit;font-size:.87rem;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.btn-primary{background:linear-gradient(135deg,var(--pink),var(--rose));color:#fff;}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(232,82,110,.35);}
+.btn-slo{background:linear-gradient(135deg,#A8D8EA,#6AB8D4);color:#0E3A52;}
+.btn-slo:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(106,184,212,.4);}
+.btn-ncc{background:linear-gradient(135deg,#F4A7B9,#D4B8E0);color:#4A1030;}
+.btn-ncc:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(212,184,224,.5);}
+.btn-ghost{background:#fff;border:1.5px solid var(--border2);color:var(--muted);}
+.btn-ghost:hover{background:var(--surface2);border-color:var(--pink);color:var(--text);}
+.btn-danger{background:#FFF0F2;border:1.5px solid #F4A7B9;color:#C0294A;}
+.btn-danger:hover{background:#FFE0E6;border-color:var(--rose);}
+.btn-success{background:#EAF8F0;border:1.5px solid #A0D9BB;color:#1A6B44;}
+.btn-success:hover{background:#D4F0E4;border-color:#5CBF94;}
+.btn-warn{background:#FFF8E0;border:1.5px solid #FFEAA0;color:#7A5500;}
+.btn-warn:hover{background:#FFF0B0;}
+.btn-purple{background:#F5EFF9;border:1.5px solid #D4B8E0;color:#5C2A70;}
+.btn-purple:hover{background:#EAE0F5;}
+.btn-sky{background:#EAF6FA;border:1.5px solid #A8D8EA;color:#1A4A6B;}
+.btn-sky:hover{background:#D4EEF7;}
+.btn-sm{padding:.3rem .7rem;font-size:.78rem;border-radius:10px;}
+.btn-xs{padding:.22rem .5rem;font-size:.73rem;border-radius:8px;}
+ 
+/* ── INPUTS ── */
+.field{display:flex;flex-direction:column;gap:.35rem;}
+.field label{color:var(--muted);font-size:.78rem;font-weight:600;}
+.input{width:100%;background:#fff;border:1.5px solid var(--border2);border-radius:var(--r);padding:.65rem .95rem;color:var(--text);font-family:inherit;font-size:.9rem;outline:none;transition:border-color .15s;box-shadow:0 1px 3px rgba(244,167,185,.12);}
+.input:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(244,167,185,.2);}
+.input::placeholder{color:var(--faint);}
+select.input{cursor:pointer;}select.input option{background:#fff;color:var(--text);}
+textarea.input{resize:vertical;min-height:68px;}
+ 
+/* ── CARDS / TABS / BADGES ── */
+.card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;box-shadow:0 2px 8px rgba(244,167,185,.1);}
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.75rem;align-items:center;}
+.tab{background:transparent;border:1.5px solid transparent;border-radius:var(--r);padding:.45rem 1rem;color:var(--muted);font-family:inherit;font-size:.86rem;font-weight:600;cursor:pointer;transition:all .15s;position:relative;}
+.tab.active{background:var(--rose-light);border-color:var(--pink);color:var(--pink-dark);font-weight:700;}
+.tab:not(.active):hover{background:var(--surface2);border-color:var(--border2);color:var(--text);}
+.tab-badge{position:absolute;top:-5px;right:-5px;background:var(--rose);color:#fff;font-size:.62rem;font-weight:700;border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;line-height:1;}
+.badge{display:inline-block;border-radius:50px;padding:.18rem .65rem;font-size:.7rem;font-weight:700;letter-spacing:.3px;}
+.badge-low{background:#EAF8F0;color:#1A6B44;border:1px solid #A0D9BB;}
+.badge-medium{background:#FFF8E0;color:#7A5500;border:1px solid #FFEAA0;}
+.badge-high{background:#FFE8EC;color:#C0294A;border:1px solid #F4A7B9;}
+.badge-rec{background:#F5EFF9;color:#5C2A70;border:1px solid #D4B8E0;}
+.badge-collab{background:#EAF6FA;color:#1A4A6B;border:1px solid #A8D8EA;}
+.badge-everyone{background:#F0F8FF;color:#1A4A6B;border:1px solid #A8D8EA;}
+.badge-slot{background:#FEF0F3;color:var(--pink-dark);border:1px solid var(--pink);}
+ 
+/* ── LANDING ── */
+#landing{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2rem;padding:2rem;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(249,208,220,.4) 0%,transparent 70%);}
+.landing-icon{font-size:3.8rem;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.landing-title{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(2rem,6vw,3.2rem);text-align:center;line-height:1.15;background:linear-gradient(135deg,#E8526E 0%,#F4A7B9 40%,#D4B8E0 80%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 4s linear infinite;}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+.landing-sub{color:var(--muted);font-size:1rem;text-align:center;}
+.landing-section{display:flex;flex-direction:column;align-items:center;gap:.75rem;width:100%;max-width:520px;}
+.landing-section-label{color:var(--faint);font-size:.76rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.landing-btns{display:flex;gap:.9rem;flex-wrap:wrap;justify-content:center;width:100%;}
+.landing-btns .btn{padding:.85rem 1.6rem;font-size:.95rem;flex:1;min-width:160px;max-width:220px;}
+.landing-divider{width:100%;max-width:520px;border:none;border-top:1.5px solid var(--border);margin:.25rem 0;}
+ 
+/* ── LOGIN ── */
+#login-view{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(249,208,220,.3) 0%,transparent 70%);}
+.login-box{background:#fff;border:1.5px solid var(--border2);border-radius:var(--r-xl);padding:2.5rem;width:100%;max-width:380px;text-align:center;box-shadow:0 4px 24px rgba(244,167,185,.2);}
+.login-box h2{font-family:'Playfair Display',serif;margin-bottom:.4rem;color:var(--text);}
+.login-campus-label{font-size:.88rem;margin-bottom:1.5rem;font-weight:700;}
+.login-err{color:#C0294A;font-size:.83rem;margin-bottom:.75rem;}
+.pw-reset-box{background:#FFF8E0;border:1.5px solid #FFEAA0;border-radius:var(--r-lg);padding:1.5rem;margin-bottom:1rem;text-align:left;}
+.pw-reset-box p{color:#7A5500;font-size:.88rem;line-height:1.5;}
+ 
+/* ── AVATAR ── */
+.avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0;letter-spacing:.5px;}
+.avatar-sm{width:36px;height:36px;font-size:.75rem;}
+.avatar-md{width:48px;height:48px;font-size:.95rem;}
+.avatar-lg{width:64px;height:64px;font-size:1.3rem;}
+.avatar-xl{width:76px;height:76px;font-size:1.5rem;}
+ 
+/* ── HERO BARS ── */
+.user-hero{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-xl);padding:1.6rem;margin-bottom:1.75rem;display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap;box-shadow:0 2px 10px rgba(244,167,185,.12);}
+.user-hero-info{flex:1;min-width:0;}
+.user-hero-name{font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:.2rem;color:var(--text);}
+.user-hero-sub{color:var(--muted);font-size:.85rem;}
+.user-hero-pts{text-align:center;flex-shrink:0;}
+.pts-big{font-size:2.4rem;font-weight:700;color:#C88A00;line-height:1;}
+.pts-label{color:var(--muted);font-size:.75rem;margin-top:.15rem;}
+ 
+/* ── TASK ROWS ── */
+.task-list{display:flex;flex-direction:column;gap:.65rem;}
+.task-row{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;display:flex;align-items:flex-start;gap:.85rem;flex-wrap:wrap;transition:all .2s;box-shadow:0 1px 4px rgba(244,167,185,.08);}
+.task-row:hover{box-shadow:0 3px 10px rgba(244,167,185,.18);border-color:var(--pink);}
+.task-row.done{background:#F7FBF9;border-color:#A0D9BB;opacity:.7;}
+.task-row.overdue{border-color:var(--pink);background:#FFF5F7;}
+.task-row.locked{background:var(--surface2);opacity:.6;}
+.task-row.voided{background:#FFF5F7;border-color:#F4A7B9;opacity:.6;}
+.task-main{flex:1;min-width:180px;}
+.task-title{font-weight:700;font-size:.93rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;color:var(--text);}
+.task-row.done .task-title-text{text-decoration:line-through;color:var(--muted);}
+.task-row.voided .task-title-text{text-decoration:line-through;color:var(--faint);}
+.task-desc{color:var(--muted);font-size:.78rem;margin-top:.2rem;}
+.task-meta{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.4rem;}
+.task-assign{color:var(--muted);font-size:.76rem;}
+.task-pts{color:#7A5500;font-weight:700;font-size:.82rem;background:#FFF8E0;border-radius:6px;padding:.15rem .5rem;border:1px solid #FFEAA0;}
+.task-deadline{font-size:.76rem;}
+.task-deadline.overdue{color:#C0294A;font-weight:600;}.task-deadline.ok{color:var(--muted);}
+.task-actions{display:flex;flex-direction:column;gap:.4rem;flex-shrink:0;align-items:flex-end;}
+.done-check{color:#1A6B44;font-size:.82rem;font-weight:700;}
+.voided-note{color:#C0294A;font-size:.76rem;font-weight:600;}
+.collab-progress{font-size:.76rem;color:#1A4A6B;margin-top:.2rem;}
+.task-row-admin-btns{display:flex;gap:.35rem;flex-shrink:0;align-items:center;}
+ 
+/* ── LEADERBOARD ── */
+.lb-row{display:flex;align-items:center;gap:.75rem;padding:.6rem 0;border-bottom:1px solid var(--border);}
+.lb-row:last-child{border-bottom:none;}
+.lb-medal{font-size:1.15rem;width:28px;text-align:center;flex-shrink:0;}
+.lb-rank{width:28px;text-align:center;color:var(--muted);font-size:.85rem;flex-shrink:0;}
+.lb-name{flex:1;font-size:.9rem;color:var(--text);}
+.lb-pts{color:#C88A00;font-weight:700;font-size:.92rem;}
+ 
+/* ── USER / WORKER CARDS ── */
+.user-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:1.1rem 1.25rem;display:flex;align-items:center;gap:.9rem;transition:all .15s;box-shadow:0 1px 4px rgba(244,167,185,.08);cursor:pointer;}
+.user-card:hover{box-shadow:0 3px 10px rgba(244,167,185,.18);border-color:var(--pink);}
+.user-card-info{flex:1;min-width:0;}
+.user-card-name{font-weight:700;font-size:.95rem;color:var(--text);}
+.user-card-sub{color:var(--muted);font-size:.78rem;}
+.user-card-pts{text-align:right;flex-shrink:0;}
+.user-card-pts .num{color:#C88A00;font-weight:700;font-size:1.05rem;}
+.user-card-pts .lbl{color:var(--faint);font-size:.72rem;}
+.user-card-btns{display:flex;gap:.35rem;flex-shrink:0;align-items:center;}
+ 
+/* ── FORM PANELS ── */
+.form-panel{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:1.4rem;box-shadow:0 2px 10px rgba(244,167,185,.08);}
+.form-panel h3{font-family:'Playfair Display',serif;color:var(--pink-dark);margin-bottom:1.2rem;font-size:1.1rem;}
+.form-grid{display:flex;flex-direction:column;gap:.85rem;}
+.form-row{display:grid;gap:.75rem;}
+.form-row.col2{grid-template-columns:1fr 1fr;}
+.form-row.col3{grid-template-columns:1fr 1fr 1fr;}
+.color-swatches{display:flex;gap:.45rem;flex-wrap:wrap;}
+.swatch{width:30px;height:30px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .1s;padding:0;}
+.swatch:hover{transform:scale(1.15);}.swatch.active{border-color:var(--text);}
+.type-toggle{display:flex;gap:.4rem;flex-wrap:wrap;}
+.type-btn{flex:1;min-width:80px;padding:.45rem .5rem;font-family:inherit;font-size:.78rem;font-weight:600;border-radius:10px;cursor:pointer;border:1.5px solid var(--border2);background:#fff;color:var(--muted);transition:all .15s;text-align:center;}
+.rec-options{background:#F5EFF9;border:1.5px solid #D4B8E0;border-radius:var(--r);padding:.85rem;display:flex;flex-direction:column;gap:.75rem;}
+.slot-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:.85rem;display:flex;flex-direction:column;gap:.75rem;margin-bottom:.5rem;}
+.slot-box-header{display:flex;align-items:center;justify-content:space-between;}
+.slot-box-label{font-weight:700;font-size:.82rem;color:var(--pink-dark);}
+ 
+/* ── HISTORY / ADJUSTMENT ROWS ── */
+.hist-row{background:#EAF8F0;border:1.5px solid #A0D9BB;border-radius:var(--r);padding:.85rem 1.2rem;display:flex;align-items:center;gap:.85rem;flex-wrap:wrap;}
+.hist-check{color:#1A6B44;font-weight:700;}
+.hist-title{flex:1;color:var(--text);font-size:.88rem;font-weight:500;}
+.hist-pts{color:#C88A00;font-weight:700;font-size:.82rem;}
+.hist-date{color:var(--faint);font-size:.75rem;}
+.adj-row{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:.85rem 1.2rem;display:flex;align-items:center;gap:.85rem;flex-wrap:wrap;}
+.adj-row.bonus{border-color:#A0D9BB;background:#EAF8F0;}
+.adj-row.deduct{border-color:#F4A7B9;background:#FFF5F7;}
+.adj-row.voided{border-color:#F4A7B9;background:#FFF0F2;opacity:.7;}
+.adj-icon{font-size:1.1rem;flex-shrink:0;}
+.adj-info{flex:1;min-width:0;}
+.adj-title{font-weight:700;font-size:.88rem;color:var(--text);}
+.adj-reason{color:var(--muted);font-size:.76rem;margin-top:.1rem;}
+.adj-pts{font-weight:700;font-size:.88rem;}
+.adj-pts.plus{color:#1A6B44;}.adj-pts.minus{color:#C0294A;}
+.adj-date{color:var(--faint);font-size:.74rem;}
+ 
+/* ── PITCH ROWS ── */
+.pitch-row{background:#F5EFF9;border:1.5px solid #D4B8E0;border-radius:var(--r);padding:.85rem 1.2rem;display:flex;align-items:flex-start;gap:.85rem;flex-wrap:wrap;}
+.pitch-row.approved{background:#EAF8F0;border-color:#A0D9BB;}
+.pitch-row.denied{background:#FFF0F2;border-color:#F4A7B9;opacity:.7;}
+.pitch-status{font-size:.72rem;font-weight:700;padding:.15rem .55rem;border-radius:50px;display:inline-block;margin-top:.3rem;}
+.pitch-status-pending{background:#F5EFF9;color:#5C2A70;border:1px solid #D4B8E0;}
+.pitch-status-approved{background:#EAF8F0;color:#1A6B44;border:1px solid #A0D9BB;}
+.pitch-status-denied{background:#FFF0F2;color:#C0294A;border:1px solid #F4A7B9;}
+ 
+/* ── NOTIFICATIONS ── */
+.notif-row{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:.9rem 1.1rem;display:flex;gap:.85rem;align-items:flex-start;transition:all .15s;box-shadow:0 1px 3px rgba(244,167,185,.06);}
+.notif-row.unread{border-color:var(--pink);background:#FFF5F7;}
+.notif-row.unread::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--rose);flex-shrink:0;margin-top:.35rem;}
+.notif-icon{font-size:1.3rem;flex-shrink:0;}
+.notif-body{flex:1;min-width:0;}
+.notif-title{font-weight:700;font-size:.9rem;color:var(--text);margin-bottom:.2rem;}
+.notif-text{color:var(--muted);font-size:.82rem;line-height:1.5;}
+.notif-meta{display:flex;align-items:center;gap:.5rem;margin-top:.35rem;flex-wrap:wrap;}
+.notif-from{font-size:.74rem;color:var(--faint);}
+.notif-date{font-size:.74rem;color:var(--faint);}
+.notif-thread{margin-top:.75rem;border-left:3px solid var(--border);padding-left:.85rem;display:flex;flex-direction:column;gap:.5rem;}
+.thread-reply{background:var(--surface2);border-radius:10px;padding:.6rem .85rem;}
+.thread-reply-from{font-size:.73rem;font-weight:700;color:var(--muted);margin-bottom:.15rem;}
+.thread-reply-text{font-size:.83rem;color:var(--text);}
+.reply-input-row{display:flex;gap:.5rem;margin-top:.5rem;align-items:flex-end;}
+.reply-input-row textarea{flex:1;min-height:48px;font-size:.84rem;}
+ 
+/* ── HELP BANNER ── */
+.alert-banner{border-radius:var(--r-lg);padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:flex-start;gap:.85rem;}
+.alert-banner.warn{background:#FFF8E0;border:1.5px solid #FFEAA0;}
+.alert-banner.info{background:#F5EFF9;border:1.5px solid #D4B8E0;}
+.alert-banner.danger{background:#FFF0F2;border:1.5px solid #F4A7B9;}
+.alert-icon{font-size:1.5rem;flex-shrink:0;}
+.alert-body{flex:1;}
+.alert-title{font-weight:700;font-size:.95rem;margin-bottom:.5rem;}
+.alert-banner.warn .alert-title{color:#7A5500;}
+.alert-banner.info .alert-title{color:#5C2A70;}
+.alert-banner.danger .alert-title{color:#C0294A;}
+.alert-item{display:flex;align-items:flex-start;gap:.75rem;padding:.5rem 0;border-bottom:1px solid rgba(0,0,0,.06);}
+.alert-item:last-child{border-bottom:none;}
+.alert-item-info{flex:1;}
+.alert-item-who{font-weight:700;font-size:.88rem;}
+.alert-item-sub{color:var(--muted);font-size:.76rem;margin-top:.1rem;}
+.alert-item-btns{display:flex;gap:.35rem;flex-shrink:0;}
+ 
+/* ── PROFILE MODAL ── */
+#profile-modal{display:none;position:fixed;inset:0;z-index:600;background:rgba(61,21,32,.5);backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto;}
+#profile-modal.show{display:flex!important;}
+.profile-box{background:#fff;border:1.5px solid var(--border2);border-radius:var(--r-xl);padding:1.75rem;width:100%;max-width:580px;margin:auto;box-shadow:0 8px 40px rgba(244,167,185,.3);}
+.profile-section{margin-bottom:1.5rem;}
+.profile-section-title{font-family:'Playfair Display',serif;font-size:1rem;color:var(--pink-dark);margin-bottom:.75rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);}
+.profile-empty{color:var(--muted);font-size:.82rem;font-style:italic;}
+ 
+/* ── GENERIC MODALS ── */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:600;background:rgba(61,21,32,.5);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.show{display:flex!important;}
+.modal-box{background:#fff;border:1.5px solid var(--border2);border-radius:var(--r-xl);padding:2rem;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(244,167,185,.3);}
+.modal-box h3{font-family:'Playfair Display',serif;color:var(--pink-dark);margin-bottom:1.25rem;}
+.modal-btns{display:flex;gap:.65rem;margin-top:1.25rem;}
+ 
+/* ── CELEBRATION ── */
+#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:9999;display:none;}
+#celebration{display:none;position:fixed;inset:0;z-index:9998;background:rgba(61,21,32,.45);backdrop-filter:blur(5px);align-items:center;justify-content:center;}
+#celebration.show{display:flex!important;}
+.celeb-box{background:#fff;border:2.5px solid var(--pink);border-radius:var(--r-xl);padding:2.5rem 3rem;text-align:center;max-width:380px;animation:celebIn .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 40px rgba(244,167,185,.4);}
+@keyframes celebIn{from{transform:scale(.5) rotate(-5deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.celeb-box .icon{font-size:3.2rem;margin-bottom:.5rem;}
+.celeb-box h2{font-family:'Playfair Display',serif;color:var(--pink-dark);font-size:1.75rem;margin-bottom:.5rem;}
+.celeb-task{color:var(--text);font-weight:700;font-size:1rem;margin-bottom:1.1rem;}
+.celeb-pts{display:inline-flex;align-items:center;gap:.4rem;background:#FFF8E0;border:1.5px solid #FFEAA0;border-radius:50px;padding:.45rem 1.15rem;color:#7A5500;font-weight:700;}
+.celeb-hint{color:var(--faint);font-size:.78rem;margin-top:1.1rem;}
+ 
+/* ── MOTD ── */
+#motd-modal{display:none;position:fixed;inset:0;z-index:9997;background:rgba(61,21,32,.5);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:1rem;}
+#motd-modal.show{display:flex!important;}
+.motd-box{background:#fff;border:2.5px solid var(--pink);border-radius:var(--r-xl);padding:2rem;width:100%;max-width:420px;max-height:85vh;overflow-y:auto;text-align:center;animation:celebIn .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 40px rgba(244,167,185,.4);}
+.motd-icon{font-size:2.8rem;margin-bottom:.5rem;}
+.motd-from{font-size:.75rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--pink);margin-bottom:.4rem;}
+.motd-title{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--text);margin-bottom:.85rem;font-weight:700;}
+.motd-body{color:var(--muted);font-size:.95rem;line-height:1.65;margin-bottom:1.25rem;text-align:left;}
+ 
+/* ── GRID LAYOUTS ── */
+.two-col{display:grid;grid-template-columns:1fr 360px;gap:2rem;align-items:start;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem;}
+.sticky-panel{position:sticky;top:72px;}
+ 
+/* ── DB ERROR ── */
+#db-error{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;}
+.err-box{background:#FFF0F2;border:1.5px solid #F4A7B9;border-radius:var(--r-xl);padding:2.5rem;max-width:520px;text-align:center;}
+.err-box h2{color:#C0294A;font-family:'Playfair Display',serif;margin-bottom:1rem;}
+.err-msg{color:var(--muted);font-size:.88rem;margin-bottom:.5rem;word-break:break-all;}
+code{background:var(--surface2);padding:.15rem .45rem;border-radius:5px;font-size:.83rem;color:var(--pink-dark);}
+ 
+/* ── MISC ── */
+.reset-btn{background:#FFF0F2;border:1.5px solid #F4A7B9;color:#C0294A;border-radius:var(--r);padding:.45rem 1rem;font-family:inherit;font-size:.83rem;font-weight:700;cursor:pointer;transition:all .15s;margin-left:auto;}
+.reset-btn:hover{background:#FFE0E6;}
+h2.section-title{font-family:'Playfair Display',serif;font-size:1.35rem;margin-bottom:1.25rem;color:var(--text);}
+.empty{text-align:center;padding:3rem 1rem;color:var(--muted);}
+.empty .icon{font-size:2.5rem;margin-bottom:.75rem;}
+.solo-claim{display:flex;align-items:center;gap:.5rem;background:#F5EFF9;border:1.5px solid #D4B8E0;border-radius:10px;padding:.5rem .75rem;cursor:pointer;font-size:.82rem;color:#5C2A70;font-weight:600;}
+.solo-claim input{accent-color:#5C2A70;width:15px;height:15px;cursor:pointer;}
+.msg-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:1rem 1.15rem;display:flex;align-items:flex-start;gap:.85rem;box-shadow:0 1px 4px rgba(244,167,185,.08);}
+.msg-card.today{border-color:var(--pink);background:#FFF5F7;}
+.msg-card.scheduled{border-color:#A8D8EA;background:#F0F8FF;}
+.msg-card-body{flex:1;min-width:0;}
+.msg-card-date{font-size:.74rem;font-weight:700;color:var(--muted);margin-bottom:.2rem;}
+.msg-card-text{font-size:.9rem;color:var(--text);line-height:1.5;word-break:break-word;}
+.msg-status{font-size:.7rem;font-weight:700;padding:.15rem .55rem;border-radius:50px;display:inline-block;margin-top:.35rem;}
+.msg-status-today{background:#FFE8EC;color:#C0294A;border:1px solid #F4A7B9;}
+.msg-status-scheduled{background:#EAF6FA;color:#1A4A6B;border:1px solid #A8D8EA;}
+.msg-status-past{background:var(--surface2);color:var(--muted);border:1px solid var(--border);}
+ 
+/* ── MOBILE ── */
+@media(max-width:600px){
+  .header{padding:.7rem 1rem;}
+  .header-brand .name{font-size:.9rem;}
+  .header-ctx,.role-pill{display:none;}
+  .page{padding:1.25rem .85rem;}
+  .tabs{gap:.3rem;margin-bottom:1.25rem;}
+  .tab{padding:.4rem .75rem;font-size:.8rem;}
+  .reset-btn{padding:.4rem .75rem;font-size:.78rem;}
+  .user-hero{padding:1.1rem;gap:1rem;}
+  .user-hero-name{font-size:1.2rem;}
+  .pts-big{font-size:1.9rem;}
+  .task-row{padding:.8rem .95rem;gap:.6rem;}
+  .task-title{font-size:.88rem;}
+  .two-col,.three-col{grid-template-columns:1fr;}
+  .form-row.col2,.form-row.col3{grid-template-columns:1fr;}
+  .sticky-panel{position:static;}
+  .modal-box{padding:1.25rem;}
+  .celeb-box{padding:2rem 1.5rem;margin:1rem;}
+  .motd-box{padding:1.25rem;border-radius:var(--r-lg);}
+  .motd-icon{font-size:2rem;}
+  .motd-title{font-size:1.1rem;}
+  h2.section-title{font-size:1.15rem;}
+}
+</style>
+</head>
+<body>
+ 
+<!-- ══ LANDING ══ -->
+<div id="landing">
+  <div class="landing-icon">📚</div>
+  <h1 class="landing-title">Library Task Tracker</h1>
+  <p class="landing-sub">Cuesta College Library · Workforce Manager</p>
+  <div class="landing-section">
+    <span class="landing-section-label">Select Campus</span>
+    <div class="landing-btns">
+      <button class="btn btn-slo" onclick="startLogin('SLO')">🏛️ SLO Campus</button>
+      <button class="btn btn-ncc" onclick="startLogin('NCC')">🌿 NCC Campus</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- ══ LOGIN ══ -->
+<div id="login-view" class="hidden">
+  <div class="login-box">
+    <div style="font-size:2rem;margin-bottom:.75rem" id="login-icon">🏛️</div>
+    <h2 id="login-title">Sign In</h2>
+    <p class="login-campus-label" id="login-campus-label" style="color:var(--campus)"></p>
+    <div class="form-grid" style="text-align:left;margin-bottom:1rem">
+      <div class="field">
+        <label>Username</label>
+        <input class="input" id="login-username" placeholder="Your name" autocomplete="username" onkeydown="if(event.key==='Enter')$('login-password').focus()"/>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input class="input" type="password" id="login-password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')tryLogin()"/>
+      </div>
+    </div>
+    <div class="login-err hidden" id="login-err">Incorrect username or password.</div>
+    <div style="display:flex;gap:.65rem">
+      <button class="btn btn-ghost" style="flex:1" onclick="showView('landing')">← Back</button>
+      <button class="btn btn-primary" style="flex:1" onclick="tryLogin()">Sign In</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- ══ PASSWORD RESET ══ -->
+<div id="pw-reset-view" class="hidden">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem">
+    <div class="login-box">
+      <div style="font-size:2rem;margin-bottom:.75rem">🔑</div>
+      <h2>Set Your Password</h2>
+      <div class="pw-reset-box" style="margin:1rem 0">
+        <p>You need to set a new password before continuing. Choose something you'll remember!</p>
+      </div>
+      <div class="form-grid" style="text-align:left;margin-bottom:1rem">
+        <div class="field">
+          <label>New Password</label>
+          <input class="input" type="password" id="new-pw1" placeholder="New password" onkeydown="if(event.key==='Enter')$('new-pw2').focus()"/>
+        </div>
+        <div class="field">
+          <label>Confirm Password</label>
+          <input class="input" type="password" id="new-pw2" placeholder="Confirm password" onkeydown="if(event.key==='Enter')submitNewPassword()"/>
+        </div>
+      </div>
+      <div class="login-err hidden" id="pw-reset-err"></div>
+      <button class="btn btn-primary" style="width:100%" onclick="submitNewPassword()">Save Password & Continue</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- ══ MAIN APP SHELL ══ -->
+<div id="app-shell" class="hidden">
+ 
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-brand">
+      <span class="logo">📚</span>
+      <span class="name">Library Task Tracker</span>
+    </div>
+    <div class="header-right">
+      <span class="syncing hidden" id="sync-indicator">syncing…</span>
+      <span class="campus-pill" id="header-campus-pill"></span>
+      <span class="role-pill" id="header-role-pill"></span>
+      <span class="header-ctx" id="header-username"></span>
+      <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign out</button>
+    </div>
+  </div>
+ 
+  <!-- ── ADMIN VIEW ── -->
+  <div id="view-admin" class="hidden">
+    <div class="page">
+      <div class="tabs" id="admin-tabs">
+        <button class="tab active" onclick="adminTab('workers')">👤 Team</button>
+        <button class="tab" onclick="adminTab('staff')">🗂️ Staff</button>
+        <button class="tab" onclick="adminTab('tasks')">📋 Tasks</button>
+        <button class="tab" onclick="adminTab('leaderboard')">🏆 Leaderboard</button>
+        <button class="tab" onclick="adminTab('messages')">💌 Messages</button>
+        <button class="tab" id="admin-notif-tab" onclick="adminTab('notifications')">🔔 Notifications</button>
+        <button class="reset-btn" onclick="resetSemester()">🔄 Reset Semester</button>
+      </div>
+ 
+      <!-- TEAM TAB (student workers) -->
+      <div id="admin-workers">
+        <div class="two-col">
+          <div>
+            <h2 class="section-title">Student Workers — <span id="workers-campus-label" style="color:var(--campus)"></span></h2>
+            <div id="pitch-banner" class="alert-banner info hidden"><div class="alert-icon">⭐</div><div class="alert-body"><div class="alert-title">Bonus Pitches Awaiting Review</div><div id="pitch-items"></div></div></div>
+            <div id="worker-list" style="display:flex;flex-direction:column;gap:.7rem"></div>
+            <p class="muted hidden" id="no-workers-msg" style="font-size:.88rem;margin-top:.75rem">No student workers yet.</p>
+            <div style="margin-top:2rem">
+              <h2 class="section-title" style="font-size:1.1rem">All Bonus Pitches</h2>
+              <div id="admin-pitch-list" style="display:flex;flex-direction:column;gap:.6rem"></div>
+              <p class="muted hidden" id="no-pitches-admin" style="font-size:.88rem;margin-top:.5rem">No pitches yet.</p>
+            </div>
+          </div>
+          <div class="sticky-panel">
+            <div class="form-panel">
+              <h3>Add Student Worker</h3>
+              <div class="form-grid">
+                <div class="field"><label>Name</label><input class="input" id="w-name" placeholder="Full name"/></div>
+                <div class="field"><label>Username</label><input class="input" id="w-username" placeholder="Login username"/></div>
+                <div class="field"><label>Avatar Color</label><div class="color-swatches" id="color-swatches-w"></div></div>
+                <div class="field"><label>Campus</label><div id="w-campus-display" style="color:var(--campus);font-weight:600;font-size:.9rem;padding:.3rem 0"></div></div>
+                <button class="btn btn-primary" onclick="addUser('student')">Add Student Worker</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- STAFF TAB -->
+      <div id="admin-staff" class="hidden">
+        <div class="two-col">
+          <div>
+            <h2 class="section-title">Staff — <span id="staff-campus-label" style="color:var(--campus)"></span></h2>
+            <div id="staff-list" style="display:flex;flex-direction:column;gap:.7rem"></div>
+            <p class="muted hidden" id="no-staff-msg" style="font-size:.88rem;margin-top:.75rem">No staff members yet.</p>
+          </div>
+          <div class="sticky-panel">
+            <div class="form-panel">
+              <h3>Add Staff Member</h3>
+              <div class="form-grid">
+                <div class="field"><label>Name</label><input class="input" id="s-name" placeholder="Full name"/></div>
+                <div class="field"><label>Username</label><input class="input" id="s-username" placeholder="Login username"/></div>
+                <div class="field"><label>Avatar Color</label><div class="color-swatches" id="color-swatches-s"></div></div>
+                <button class="btn btn-primary" onclick="addUser('staff')">Add Staff Member</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- TASKS TAB -->
+      <div id="admin-tasks" class="hidden">
+        <div class="two-col">
+          <div>
+            <h2 class="section-title">Tasks — <span id="tasks-campus-label" style="color:var(--campus)"></span></h2>
+            <div id="help-banner" class="alert-banner warn hidden"><div class="alert-icon">🆘</div><div class="alert-body"><div class="alert-title">Help Requested</div><div id="help-items"></div></div></div>
+            <div class="task-list" id="admin-task-list"></div>
+            <p class="muted hidden" id="no-tasks-admin" style="font-size:.88rem;margin-top:.75rem">No tasks yet.</p>
+          </div>
+          <div class="sticky-panel">
+            <div class="form-panel" style="max-height:calc(100vh - 100px);overflow-y:auto">
+              <h3>New Task</h3>
+              <div class="form-grid">
+                <div class="field"><label>Title *</label><input class="input" id="t-title" placeholder="Task title"/></div>
+                <div class="field"><label>Description</label><textarea class="input" id="t-desc" placeholder="Optional details…"></textarea></div>
+                <div class="form-row col2">
+                  <div class="field"><label>Points</label><input class="input" id="t-pts" type="number" min="1" max="500" value="10"/></div>
+                  <div class="field"><label>Priority</label>
+                    <select class="input" id="t-priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select>
+                  </div>
+                </div>
+                <div class="field"><label>Deadline (optional)</label><input class="input" id="t-deadline" type="date"/></div>
+                <div class="field">
+                  <label>Assign to</label>
+                  <select class="input" id="t-assign-type" onchange="onAssignTypeChange()">
+                    <option value="everyone">📢 Everyone</option>
+                    <option value="specific">👤 Specific Person</option>
+                    <option value="collaborative">🤝 Collaborative</option>
+                  </select>
+                </div>
+                <div class="field hidden" id="t-assign-user-field">
+                  <label>Select person</label>
+                  <select class="input" id="t-assign-user"><option value="">— Select —</option></select>
+                </div>
+                <div class="field hidden" id="t-collab-field">
+                  <label>Required completions to lock</label>
+                  <input class="input" id="t-collab-required" type="number" min="2" max="20" value="2"/>
+                </div>
+                <div class="field">
+                  <label>Recurrence</label>
+                  <select class="input" id="t-recurrence" onchange="onRecurrenceChange()">
+                    <option value="none">None (one-time)</option>
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="interval">Every X Days</option>
+                  </select>
+                </div>
+                <div class="rec-options hidden" id="rec-weekly-opts">
+                  <div class="field"><label>Resets every</label>
+                    <select class="input" id="t-rec-weekday"><option value="0">Sunday</option><option value="1" selected>Monday</option><option value="2">Tuesday</option><option value="3">Wednesday</option><option value="4">Thursday</option><option value="5">Friday</option><option value="6">Saturday</option></select>
+                  </div>
+                </div>
+                <div class="rec-options hidden" id="rec-monthly-opts">
+                  <div class="field"><label>Resets on day of month</label><input class="input" id="t-rec-monthday" type="number" min="1" max="28" value="1"/></div>
+                </div>
+                <div class="rec-options hidden" id="rec-interval-opts">
+                  <div class="field"><label>Every how many days?</label><input class="input" id="t-rec-interval" type="number" min="2" max="365" value="7"/></div>
+                </div>
+                <!-- Time slots -->
+                <div class="field">
+                  <label style="display:flex;align-items:center;justify-content:space-between">
+                    Time Slots (optional)
+                    <button type="button" class="btn btn-sky btn-xs" onclick="addSlot()">+ Add Slot</button>
+                  </label>
+                  <div id="slot-list" style="display:flex;flex-direction:column;gap:.5rem;margin-top:.35rem"></div>
+                  <div style="color:var(--faint);font-size:.74rem;margin-top:.3rem">Leave empty for no time restriction</div>
+                </div>
+                <div class="field">
+                  <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer">
+                    <input type="checkbox" id="t-one-per-worker" style="accent-color:var(--pink);width:15px;height:15px"/>
+                    One completion per worker per day (override requires reason)
+                  </label>
+                </div>
+                <button class="btn btn-primary" onclick="addTask()">Create Task</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- LEADERBOARD TAB -->
+      <div id="admin-leaderboard" class="hidden">
+        <h2 class="section-title">Leaderboard — <span id="lb-campus-label" style="color:var(--campus)"></span></h2>
+        <div style="max-width:460px"><div class="card" id="admin-lb"></div></div>
+      </div>
+ 
+      <!-- MESSAGES TAB -->
+      <div id="admin-messages" class="hidden">
+        <div class="two-col">
+          <div>
+            <h2 class="section-title">Scheduled Messages — <span id="msgs-campus-label" style="color:var(--campus)"></span></h2>
+            <div id="msg-list" style="display:flex;flex-direction:column;gap:.7rem"></div>
+            <p class="muted hidden" id="no-msgs-admin" style="font-size:.88rem;margin-top:.75rem">No messages scheduled.</p>
+          </div>
+          <div class="sticky-panel">
+            <div class="form-panel">
+              <h3>Schedule Message of the Day</h3>
+              <div class="form-grid">
+                <div class="field"><label>Date to show</label><input class="input" id="msg-date" type="date"/></div>
+                <div class="field"><label>Icon (emoji)</label><input class="input" id="msg-icon" placeholder="📢" maxlength="4" style="font-size:1.3rem;text-align:center"/></div>
+                <div class="field"><label>Title (optional)</label><input class="input" id="msg-title" placeholder="e.g. Happy Monday! 🌸"/></div>
+                <div class="field"><label>Message *</label><textarea class="input" id="msg-body" placeholder="Write your message…" style="min-height:90px"></textarea></div>
+                <button class="btn btn-primary" onclick="addMessage()">Schedule Message</button>
+              </div>
+            </div>
+            <div class="form-panel" style="margin-top:1rem">
+              <h3>Send Direct Message</h3>
+              <div class="form-grid">
+                <div class="field"><label>To</label>
+                  <select class="input" id="dm-target">
+                    <option value="campus">📢 Everyone on campus</option>
+                    <option value="students">🎓 All students</option>
+                    <option value="staff">🗂️ All staff</option>
+                  </select>
+                </div>
+                <div class="field hidden" id="dm-user-field"><label>Select person</label><select class="input" id="dm-user"><option value="">— Select —</option></select></div>
+                <div class="field"><label>Message *</label><textarea class="input" id="dm-body" placeholder="Your message…" style="min-height:80px"></textarea></div>
+                <button class="btn btn-primary" onclick="sendDirectMessage()">Send Message</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- NOTIFICATIONS TAB (admin) -->
+      <div id="admin-notifications" class="hidden">
+        <h2 class="section-title">Notifications</h2>
+        <div id="admin-notif-list" style="display:flex;flex-direction:column;gap:.65rem"></div>
+        <p class="muted hidden" id="no-admin-notifs" style="font-size:.88rem">No notifications.</p>
+      </div>
+ 
+    </div>
+  </div>
+ 
+  <!-- ── STAFF VIEW ── -->
+  <div id="view-staff" class="hidden">
+    <div class="page">
+      <div class="tabs" id="staff-tabs">
+        <button class="tab active" onclick="staffTab('dashboard')">🏠 Dashboard</button>
+        <button class="tab" onclick="staffTab('workers')">👤 Student Workers</button>
+        <button class="tab" onclick="staffTab('tasks')">📋 Tasks</button>
+        <button class="tab" onclick="staffTab('leaderboard')">🏆 Leaderboard</button>
+        <button class="tab" onclick="staffTab('messages')">💌 Messages</button>
+        <button class="tab" id="staff-notif-tab" onclick="staffTab('notifications')">🔔 Notifications</button>
+      </div>
+ 
+      <!-- STAFF DASHBOARD -->
+      <div id="staff-dashboard">
+        <div id="staff-hero" class="user-hero"></div>
+        <h2 class="section-title">My Tasks</h2>
+        <div class="task-list" id="staff-my-tasks"></div>
+        <p class="muted hidden" id="no-staff-tasks" style="font-size:.88rem;margin-top:.5rem">No tasks assigned to you.</p>
+      </div>
+ 
+      <!-- STAFF WORKERS TAB -->
+      <div id="staff-workers" class="hidden">
+        <div class="two-col">
+          <div>
+            <h2 class="section-title">Student Workers — <span id="staff-workers-label" style="color:var(--campus)"></span></h2>
+            <div id="staff-pitch-banner" class="alert-banner info hidden"><div class="alert-icon">⭐</div><div class="alert-body"><div class="alert-title">Bonus Pitches Awaiting Review</div><div id="staff-pitch-items"></div></div></div>
+            <div id="staff-worker-list" style="display:flex;flex-direction:column;gap:.7rem"></div>
+            <p class="muted hidden" id="no-staff-workers" style="font-size:.88rem;margin-top:.75rem">No student workers yet.</p>
+          </div>
+          <div class="sticky-panel">
+            <div class="form-panel">
+              <h3>Add Student Worker</h3>
+              <div class="form-grid">
+                <div class="field"><label>Name</label><input class="input" id="sw-name" placeholder="Full name"/></div>
+                <div class="field"><label>Username</label><input class="input" id="sw-username" placeholder="Login username"/></div>
+                <div class="field"><label>Avatar Color</label><div class="color-swatches" id="color-swatches-sw"></div></div>
+                <button class="btn btn-primary" onclick="staffAddWorker()">Add Student Worker</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- STAFF TASKS TAB -->
+      <div id="staff-tasks" class="hidden">
+        <div class="two-col">
+          <div>
+            <h2 class="section-title">All Tasks — <span id="staff-tasks-label" style="color:var(--campus)"></span></h2>
+            <div id="staff-help-banner" class="alert-banner warn hidden"><div class="alert-icon">🆘</div><div class="alert-body"><div class="alert-title">Help Requested</div><div id="staff-help-items"></div></div></div>
+            <div class="task-list" id="staff-task-list"></div>
+            <p class="muted hidden" id="no-staff-task-list" style="font-size:.88rem;margin-top:.75rem">No tasks yet.</p>
+          </div>
+          <div class="sticky-panel">
+            <div class="form-panel" style="max-height:calc(100vh - 100px);overflow-y:auto">
+              <h3>New Task</h3>
+              <div class="form-grid">
+                <div class="field"><label>Title *</label><input class="input" id="st-title" placeholder="Task title"/></div>
+                <div class="field"><label>Description</label><textarea class="input" id="st-desc" placeholder="Optional details…"></textarea></div>
+                <div class="form-row col2">
+                  <div class="field"><label>Points</label><input class="input" id="st-pts" type="number" min="1" max="500" value="10"/></div>
+                  <div class="field"><label>Priority</label>
+                    <select class="input" id="st-priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select>
+                  </div>
+                </div>
+                <div class="field"><label>Assign to</label>
+                  <select class="input" id="st-assign-type" onchange="onStaffAssignTypeChange()">
+                    <option value="everyone">📢 Everyone (students)</option>
+                    <option value="specific">👤 Specific Student</option>
+                    <option value="self">🙋 Myself</option>
+                    <option value="request">📨 Request from Staff/Admin</option>
+                  </select>
+                </div>
+                <div class="field hidden" id="st-assign-user-field"><label>Select person</label><select class="input" id="st-assign-user"><option value="">— Select —</option></select></div>
+                <div class="field"><label>Recurrence</label>
+                  <select class="input" id="st-recurrence" onchange="onStaffRecurrenceChange()">
+                    <option value="none">None</option><option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="interval">Every X Days</option>
+                  </select>
+                </div>
+                <div class="rec-options hidden" id="st-rec-weekly"><div class="field"><label>Resets every</label><select class="input" id="st-rec-weekday"><option value="0">Sunday</option><option value="1" selected>Monday</option><option value="2">Tuesday</option><option value="3">Wednesday</option><option value="4">Thursday</option><option value="5">Friday</option><option value="6">Saturday</option></select></div></div>
+                <div class="rec-options hidden" id="st-rec-monthly"><div class="field"><label>Resets on day</label><input class="input" id="st-rec-monthday" type="number" min="1" max="28" value="1"/></div></div>
+                <div class="rec-options hidden" id="st-rec-interval"><div class="field"><label>Every how many days?</label><input class="input" id="st-rec-interval-val" type="number" min="2" max="365" value="7"/></div></div>
+                <button class="btn btn-primary" onclick="staffAddTask()">Create Task</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- STAFF LEADERBOARD -->
+      <div id="staff-leaderboard" class="hidden">
+        <h2 class="section-title">Student Leaderboard — <span id="staff-lb-label" style="color:var(--campus)"></span></h2>
+        <div style="max-width:460px"><div class="card" id="staff-lb"></div></div>
+      </div>
+ 
+      <!-- STAFF MESSAGES -->
+      <div id="staff-messages" class="hidden">
+        <div class="two-col">
+          <div>
+            <h2 class="section-title">Messages</h2>
+            <div id="staff-msg-list" style="display:flex;flex-direction:column;gap:.65rem"></div>
+            <p class="muted hidden" id="no-staff-msgs" style="font-size:.88rem">No messages.</p>
+          </div>
+          <div class="sticky-panel">
+            <div class="form-panel">
+              <h3>Send Message</h3>
+              <div class="form-grid">
+                <div class="field"><label>To</label>
+                  <select class="input" id="sdm-target" onchange="onStaffDmTargetChange()">
+                    <option value="campus">📢 Everyone on campus</option>
+                    <option value="students">🎓 All students</option>
+                    <option value="admin">👑 Admin</option>
+                    <option value="specific">👤 Specific person</option>
+                  </select>
+                </div>
+                <div class="field hidden" id="sdm-user-field"><label>Select person</label><select class="input" id="sdm-user"><option value="">— Select —</option></select></div>
+                <div class="field"><label>Message *</label><textarea class="input" id="sdm-body" placeholder="Your message…" style="min-height:80px"></textarea></div>
+                <button class="btn btn-primary" onclick="staffSendMessage()">Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- STAFF NOTIFICATIONS -->
+      <div id="staff-notifications" class="hidden">
+        <h2 class="section-title">Notifications</h2>
+        <div id="staff-notif-list" style="display:flex;flex-direction:column;gap:.65rem"></div>
+        <p class="muted hidden" id="no-staff-notifs" style="font-size:.88rem">No notifications.</p>
+      </div>
+ 
+    </div>
+  </div>
+ 
+  <!-- ── STUDENT VIEW ── -->
+  <div id="view-student" class="hidden">
+    <div class="page">
+      <div id="student-hero" class="user-hero"></div>
+      <div class="tabs" id="student-tabs">
+        <button class="tab active" onclick="studentTab('tasks')">📋 My Tasks</button>
+        <button class="tab" onclick="studentTab('history')">✅ History</button>
+        <button class="tab" onclick="studentTab('leaderboard')">🏆 Leaderboard</button>
+        <button class="tab" onclick="studentTab('pitch')">⭐ Pitch for Points</button>
+        <button class="tab" id="student-notif-tab" onclick="studentTab('notifications')">🔔 Notifications</button>
+      </div>
+      <div id="s-tasks"><div class="task-list" id="student-task-list"></div></div>
+      <div id="s-history" class="hidden">
+        <h2 class="section-title">My History</h2>
+        <div id="student-history-list" style="display:flex;flex-direction:column;gap:.6rem"></div>
+      </div>
+      <div id="s-leaderboard" class="hidden">
+        <h2 class="section-title">Leaderboard — <span id="student-lb-label" style="color:var(--campus)"></span></h2>
+        <div style="max-width:420px"><div class="card" id="student-lb"></div></div>
+      </div>
+      <div id="s-pitch" class="hidden">
+        <div style="max-width:560px">
+          <h2 class="section-title">⭐ Pitch for Bonus Points</h2>
+          <p class="muted" style="margin-bottom:1.5rem;font-size:.9rem;line-height:1.6">Did something great that wasn't on your task list? Explain what you did and how many points you think it's worth. Your admin or staff will review it.</p>
+          <div class="form-panel" style="margin-bottom:1.5rem">
+            <h3>Submit a Pitch</h3>
+            <div class="form-grid">
+              <div class="field"><label>What did you do? *</label><input class="input" id="pitch-title" placeholder="Short title…"/></div>
+              <div class="field"><label>Detailed explanation *</label><textarea class="input" id="pitch-desc" placeholder="Describe what you did and why it deserves points…" style="min-height:110px"></textarea></div>
+              <div class="field"><label>Points you're asking for</label><input class="input" id="pitch-pts" type="number" min="1" max="200" value="10"/></div>
+              <button class="btn btn-primary" onclick="submitPitch()">Submit Pitch ⭐</button>
+            </div>
+          </div>
+          <h3 class="section-title" style="font-size:1.1rem">Your Past Pitches</h3>
+          <div id="student-pitch-list" style="display:flex;flex-direction:column;gap:.65rem"></div>
+          <p class="muted hidden" id="no-pitches-student" style="font-size:.88rem">No pitches yet.</p>
+        </div>
+      </div>
+      <div id="s-notifications" class="hidden">
+        <h2 class="section-title">Notifications</h2>
+        <div id="student-notif-list" style="display:flex;flex-direction:column;gap:.65rem"></div>
+        <p class="muted hidden" id="no-student-notifs" style="font-size:.88rem">No notifications yet.</p>
+      </div>
+    </div>
+  </div>
+ 
+</div><!-- end app-shell -->
+ 
+<!-- ══ DB ERROR ══ -->
+<div id="db-error" class="hidden">
+  <div class="err-box">
+    <div style="font-size:2.5rem;margin-bottom:1rem">⚠️</div>
+    <h2>Database Error</h2>
+    <p class="err-msg" id="db-err-msg"></p>
+    <p style="color:var(--faint);font-size:.8rem;margin:1rem 0">Make sure your Turso URL and token are correct at the top of the script.</p>
+    <button class="btn btn-primary" onclick="loadData()">Retry</button>
+    <button class="btn btn-ghost" style="margin-top:.75rem" onclick="showView('landing')">← Back</button>
+  </div>
+</div>
+ 
+<!-- ══ MODALS ══ -->
+ 
+<!-- Profile modal -->
+<div id="profile-modal" style="display:none">
+  <div class="profile-box">
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem">
+      <div id="profile-avatar" class="avatar avatar-lg"></div>
+      <div style="flex:1">
+        <div id="profile-name" style="font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--text)"></div>
+        <div id="profile-meta" style="color:var(--muted);font-size:.82rem"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.35rem;align-items:flex-end">
+        <button class="btn btn-warn btn-sm" id="profile-reset-pw-btn" onclick="triggerPasswordReset()">🔑 Reset Password</button>
+        <button class="btn btn-ghost btn-sm" onclick="closeProfileModal()">✕ Close</button>
+      </div>
+    </div>
+    <!-- Point adjustment buttons (students only) -->
+    <div id="profile-adj-btns" style="display:flex;gap:.5rem;margin-bottom:1.25rem">
+      <button class="btn btn-success btn-sm" onclick="openAdjModal('bonus')">＋ Bonus Points</button>
+      <button class="btn btn-danger btn-sm" onclick="openAdjModal('deduct')">－ Deduct Points</button>
+    </div>
+    <div class="profile-section">
+      <div class="profile-section-title">✅ Completed Tasks</div>
+      <div id="profile-completions" style="display:flex;flex-direction:column;gap:.5rem"></div>
+    </div>
+    <div class="profile-section" id="profile-pitches-section">
+      <div class="profile-section-title">⭐ Bonus Pitches</div>
+      <div id="profile-pitches" style="display:flex;flex-direction:column;gap:.5rem"></div>
+    </div>
+    <div class="profile-section" id="profile-adjs-section">
+      <div class="profile-section-title">📊 Point Adjustments</div>
+      <div id="profile-adjustments" style="display:flex;flex-direction:column;gap:.5rem"></div>
+    </div>
+  </div>
+</div>
+ 
+<!-- Task edit modal -->
+<div id="edit-modal" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <h3>Edit Task</h3>
+    <div class="form-grid">
+      <div class="field"><label>Title</label><input class="input" id="edit-title"/></div>
+      <div class="field"><label>Description</label><textarea class="input" id="edit-desc"></textarea></div>
+      <div class="form-row col2">
+        <div class="field"><label>Points</label><input class="input" id="edit-pts" type="number" min="1" max="500"/></div>
+        <div class="field"><label>Priority</label><select class="input" id="edit-priority"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></div>
+      </div>
+      <div class="field"><label>Deadline</label><input class="input" id="edit-deadline" type="date"/></div>
+      <div class="field" id="edit-collab-wrap" style="display:none"><label>Required completions</label><input class="input" id="edit-collab-required" type="number" min="2" max="20"/></div>
+      <div class="field"><label>Recurrence</label>
+        <select class="input" id="edit-recurrence" onchange="onEditRecurrenceChange()">
+          <option value="none">None</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="interval">Every X Days</option>
+        </select>
+      </div>
+      <div class="hidden" id="edit-rec-weekly"><div class="field"><label>Resets every</label><select class="input" id="edit-rec-weekday"><option value="0">Sunday</option><option value="1">Monday</option><option value="2">Tuesday</option><option value="3">Wednesday</option><option value="4">Thursday</option><option value="5">Friday</option><option value="6">Saturday</option></select></div></div>
+      <div class="hidden" id="edit-rec-monthly"><div class="field"><label>Resets on day</label><input class="input" id="edit-rec-monthday" type="number" min="1" max="28"/></div></div>
+      <div class="hidden" id="edit-rec-interval"><div class="field"><label>Every how many days?</label><input class="input" id="edit-rec-interval-val" type="number" min="2" max="365"/></div></div>
+      <div class="field">
+        <label style="display:flex;align-items:center;justify-content:space-between">Time Slots<button type="button" class="btn btn-sky btn-xs" onclick="addEditSlot()">+ Add Slot</button></label>
+        <div id="edit-slot-list" style="display:flex;flex-direction:column;gap:.5rem;margin-top:.35rem"></div>
+      </div>
+      <div class="field"><label style="display:flex;align-items:center;gap:.5rem;cursor:pointer"><input type="checkbox" id="edit-one-per-worker" style="accent-color:var(--pink);width:15px;height:15px"/> One completion per worker per day</label></div>
+      <p style="color:var(--muted);font-size:.78rem">⚠️ Changing points updates all past completions retroactively.</p>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeEditModal()">Cancel</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- Point adjustment modal -->
+<div id="adj-modal" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <h3 id="adj-modal-title">Award Bonus Points</h3>
+    <div class="form-grid">
+      <div class="field"><label>Points</label><input class="input" id="adj-pts" type="number" min="1" max="500" value="10"/></div>
+      <div class="field"><label>Reason *</label><textarea class="input" id="adj-reason" placeholder="Describe why…" style="min-height:80px"></textarea></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeAdjModal()">Cancel</button>
+      <button class="btn btn-primary" style="flex:1" id="adj-submit-btn" onclick="submitAdj()">Award Points</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- Void points modal -->
+<div id="void-modal" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <h3 style="color:#C0294A">Void Points</h3>
+    <p style="color:var(--muted);font-size:.88rem;margin-bottom:1rem" id="void-desc"></p>
+    <div class="form-grid">
+      <div class="field"><label>Reason for voiding * (visible to worker)</label><textarea class="input" id="void-reason" placeholder="e.g. Task was not completed properly…" style="min-height:80px"></textarea></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeVoidModal()">Cancel</button>
+      <button class="btn btn-danger" style="flex:1" onclick="submitVoid()">Void Points</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- Decline task modal -->
+<div id="decline-modal" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <h3 style="color:#C0294A">Decline Task</h3>
+    <p style="color:var(--muted);font-size:.88rem;margin-bottom:1rem" id="decline-warning"></p>
+    <div class="form-grid">
+      <div class="field"><label>Reason for declining *</label><textarea class="input" id="decline-reason" placeholder="Please explain why you are unable to complete this task…" style="min-height:90px"></textarea></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeDeclineModal()">Cancel</button>
+      <button class="btn btn-danger" style="flex:1" onclick="submitDecline()">Decline</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- Override reason modal (one-per-worker-day bypass) -->
+<div id="override-modal" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <h3>⚠️ You Already Completed a Slot Today</h3>
+    <p style="color:var(--muted);font-size:.88rem;margin-bottom:1rem">You've already completed one slot of this task today. To complete another slot, please explain why.</p>
+    <div class="form-grid">
+      <div class="field"><label>Reason *</label><textarea class="input" id="override-reason" placeholder="e.g. Other team members were out sick…" style="min-height:80px"></textarea></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeOverrideModal()">Cancel</button>
+      <button class="btn btn-warn" style="flex:1" onclick="submitOverride()">Complete Anyway</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- Review pitch modal -->
+<div id="review-pitch-modal" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <h3>⭐ Review Bonus Pitch</h3>
+    <div id="review-pitch-detail" style="background:var(--surface2);border-radius:var(--r);padding:1rem;margin-bottom:1rem;font-size:.88rem;line-height:1.6;color:var(--text)"></div>
+    <div class="form-grid">
+      <div class="field"><label>Points to award</label><input class="input" id="review-pts" type="number" min="0" max="500"/></div>
+      <div class="field"><label>Note to worker (optional)</label><textarea class="input" id="review-note" style="min-height:72px" placeholder="e.g. Great initiative!…"></textarea></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeReviewModal()">Cancel</button>
+      <button class="btn btn-danger" style="flex:1" onclick="decidePitch('denied')">✕ Deny</button>
+      <button class="btn btn-success" style="flex:1" onclick="decidePitch('approved')">✓ Approve</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- Message edit modal -->
+<div id="msg-edit-modal" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <h3>Edit Message</h3>
+    <div class="form-grid">
+      <div class="field"><label>Date</label><input class="input" id="medit-date" type="date"/></div>
+      <div class="field"><label>Icon</label><input class="input" id="medit-icon" maxlength="4" style="font-size:1.3rem;text-align:center"/></div>
+      <div class="field"><label>Title</label><input class="input" id="medit-title"/></div>
+      <div class="field"><label>Message</label><textarea class="input" id="medit-body" style="min-height:90px"></textarea></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeMsgEditModal()">Cancel</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveMsgEdit()">Save</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- DM reply modal -->
+<div id="reply-modal" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <h3>Reply</h3>
+    <div id="reply-thread-preview" style="background:var(--surface2);border-radius:var(--r);padding:.85rem;margin-bottom:1rem;font-size:.85rem;color:var(--muted);max-height:160px;overflow-y:auto"></div>
+    <div class="form-grid">
+      <div class="field"><label>Your reply</label><textarea class="input" id="reply-body" placeholder="Write your reply…" style="min-height:80px"></textarea></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeReplyModal()">Cancel</button>
+      <button class="btn btn-primary" style="flex:1" onclick="submitReply()">Send Reply</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- MOTD modal -->
+<div id="motd-modal" style="display:none">
+  <div class="motd-box">
+    <div class="motd-icon" id="motd-icon">📢</div>
+    <div class="motd-from">Message from your team</div>
+    <div class="motd-title" id="motd-title"></div>
+    <div class="motd-body" id="motd-body"></div>
+    <button class="btn btn-primary" style="width:100%" onclick="dismissMotd()">Got it! 💕</button>
+  </div>
+</div>
+ 
+<!-- Celebration -->
+<div id="celebration" style="display:none" onclick="closeCelebration()">
+  <div class="celeb-box" onclick="event.stopPropagation()">
+    <div class="icon">🎉</div>
+    <h2>Nice work!</h2>
+    <p style="color:var(--muted);margin-bottom:.5rem">You completed:</p>
+    <p class="celeb-task" id="celeb-task-name"></p>
+    <div class="celeb-pts" id="celeb-pts"></div>
+    <p class="celeb-hint">Click anywhere to continue</p>
+  </div>
+</div>
+ 
+<canvas id="confetti-canvas"></canvas>
+<script>
+// ══════════════════════════════════════════════════════════════
+// CONFIGURATION
+// ══════════════════════════════════════════════════════════════
+const TURSO_URL   = "https://student-worker-portal-cuestacollegelibrary.aws-us-west-2.turso.io";
+const TURSO_TOKEN = "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3ODA2MjQzMDMsImlkIjoiMDE5ZTk1NTYtMDMwMS03MWM1LTk2ODItOWZmY2QxMGE4YWUyIiwicmlkIjoiMTkyMWYxYzAtMjNjYi00ODIzLWFiNGUtN2JlMzMxODljZTcwIn0.7zs7HHKzPcZnnSqj3aipUXdLR3kRxSzv7tmDyVIXP3Rh0OFr3_PgJkvQ5GAjs6acDW89zhNE2zB_mU0BMb6-Aw";
+ 
+const CAMPUS_LABELS = { SLO:'SLO Campus', NCC:'NCC Campus' };
+const CAMPUS_ICONS  = { SLO:'🏛️', NCC:'🌿' };
+const CAMPUS_COLORS = { SLO:'#A8D8EA', NCC:'#D4B8E0' };
+const AVATAR_COLORS = ['#F4A7B9','#E8526E','#C8E6DA','#5CBF94','#A8D8EA','#6AB8D4','#D4B8E0','#9B6DB5','#FFEAA0','#E8A87C'];
+const WEEKDAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+ 
+// ══════════════════════════════════════════════════════════════
+// TURSO CLIENT
+// ══════════════════════════════════════════════════════════════
+async function tursoFetch(sql, args=[]) {
+  const res = await fetch(`${TURSO_URL}/v2/pipeline`, {
+    method:'POST',
+    headers:{'Authorization':`Bearer ${TURSO_TOKEN}`,'Content-Type':'application/json'},
+    body:JSON.stringify({requests:[{type:'execute',stmt:{sql,args:args.map(toValue)}},{type:'close'}]})
+  });
+  if(!res.ok){const t=await res.text();throw new Error(`HTTP ${res.status}: ${t}`);}
+  const data=await res.json();
+  if(data.results?.[0]?.type==='error') throw new Error(data.results[0].error?.message||'SQL error');
+  return rowsFromResult(data.results?.[0]?.response?.result);
+}
+ 
+async function tursoBatch(stmts) {
+  const requests=stmts.map(s=>({type:'execute',stmt:{sql:s.sql,args:(s.args||[]).map(toValue)}}));
+  requests.push({type:'close'});
+  const res=await fetch(`${TURSO_URL}/v2/pipeline`,{
+    method:'POST',
+    headers:{'Authorization':`Bearer ${TURSO_TOKEN}`,'Content-Type':'application/json'},
+    body:JSON.stringify({requests})
+  });
+  if(!res.ok){const t=await res.text();throw new Error(`Batch HTTP ${res.status}: ${t}`);}
+  const data=await res.json();
+  (data.results||[]).forEach((r,i)=>{if(r.type==='error')throw new Error(`Stmt ${i}: ${r.error?.message}`);});
+  return data;
+}
+ 
+function toValue(v) {
+  if(v===null||v===undefined) return {type:'null'};
+  if(typeof v==='number') return {type:'integer',value:String(Math.round(v))};
+  if(typeof v==='boolean') return {type:'integer',value:v?'1':'0'};
+  return {type:'text',value:String(v)};
+}
+ 
+function rowsFromResult(result) {
+  if(!result?.rows) return [];
+  const cols=result.cols.map(c=>c.name);
+  return result.rows.map(row=>{
+    const obj={};
+    cols.forEach((col,i)=>{const cell=row[i];obj[col]=(!cell||cell.type==='null')?null:(cell.value??null);});
+    return obj;
+  });
+}
+ 
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+let users=[],tasks=[],completions=[],notifications=[],notifReads=[],
+    pointAdjs=[],bonusPitches=[],helpRequests=[],dailyMessages=[];
+let currentUser=null, activeCampus=null;
+let editingTaskId=null, editingMsgId=null, reviewingPitch=null;
+let voidingCompletion=null, decliningTask=null, overridingTask=null, overridingSlot=null;
+let adjMode=null, adjTargetUser=null, profileUser=null, replyingNotif=null;
+let newTaskSlots=[], editTaskSlots=[];
+let selectedColorW='#F4A7B9', selectedColorS='#A8D8EA', selectedColorSW='#C8E6DA';
+ 
+// ══════════════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════════════
+const uuid=()=>([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,c=>(c^crypto.getRandomValues(new Uint8Array(1))[0]&15>>c/4).toString(16));
+const initials=n=>n.trim().split(/\s+/).map(p=>p[0]).join('').slice(0,2).toUpperCase();
+const fmtDate=d=>d?new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+const fmtTime=t=>{if(!t)return'';const[h,m]=t.split(':');const hr=Number(h);return `${hr===0?12:hr>12?hr-12:hr}:${m} ${hr<12?'AM':'PM'}`;};
+const isPast=d=>d&&new Date(d)<new Date();
+const today=()=>new Date().toISOString().slice(0,10);
+const semester=()=>{const m=new Date().getMonth()+1,y=new Date().getFullYear();return `${y}-${m<=5?'Spring':m<=7?'Summer':'Fall'}`;};
+const $=id=>document.getElementById(id);
+const campusUsers=role=>users.filter(u=>u.campus===activeCampus&&u.role===role&&u.active!=='0'&&u.active!==0);
+const campusTasks=()=>tasks.filter(t=>t.campus===activeCampus);
+const setCampusAccent=c=>document.documentElement.style.setProperty('--campus',CAMPUS_COLORS[c]||'#F4A7B9');
+ 
+// ══════════════════════════════════════════════════════════════
+// OCCURRENCE KEY
+// ══════════════════════════════════════════════════════════════
+function occurrenceKey(task,slotIdx=0,now=new Date()) {
+  const rec=task.recurrence||'none';
+  const suf=`-s${slotIdx}`;
+  if(rec==='none') return `once${suf}`;
+  if(rec==='daily') return now.toISOString().slice(0,10)+suf;
+  if(rec==='weekly'){
+    const d=new Date(now);d.setHours(0,0,0,0);
+    const diff=(d.getDay()-(Number(task.recurrence_day)??1)+7)%7;
+    d.setDate(d.getDate()-diff);
+    return `W-${d.toISOString().slice(0,10)}${suf}`;
+  }
+  if(rec==='monthly'){
+    const rd=Number(task.recurrence_day??1),y=now.getFullYear(),m=now.getMonth()+1;
+    if(now.getDate()>=rd) return `M-${y}-${String(m).padStart(2,'0')}${suf}`;
+    const p=new Date(y,now.getMonth()-1,1);
+    return `M-${p.getFullYear()}-${String(p.getMonth()+1).padStart(2,'0')}${suf}`;
+  }
+  if(rec==='interval'){
+    const intv=Number(task.recurrence_interval??7);
+    const cr=new Date(task.created_at);cr.setHours(0,0,0,0);
+    const td=new Date(now);td.setHours(0,0,0,0);
+    return `I-${Math.floor((td-cr)/86400000/intv)}${suf}`;
+  }
+  return `once${suf}`;
+}
+ 
+function recLabel(task) {
+  const r=task.recurrence;
+  if(!r||r==='none') return null;
+  if(r==='daily') return '🔁 Daily';
+  if(r==='weekly') return `🔁 Weekly · ${WEEKDAYS[task.recurrence_day??1]}s`;
+  if(r==='monthly') return `🔁 ${ordinal(Number(task.recurrence_day??1))} of month`;
+  if(r==='interval') return `🔁 Every ${task.recurrence_interval} days`;
+  return null;
+}
+ 
+function ordinal(n){const s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
+function parsedSlots(task){try{return task.slot_config?JSON.parse(task.slot_config):[];}catch{return [];}}
+ 
+function isInWindow(start,end){
+  if(!start||!end) return true;
+  const now=new Date(),cur=now.getHours()*60+now.getMinutes();
+  const[sh,sm]=start.split(':').map(Number);const[eh,em]=end.split(':').map(Number);
+  return cur>=sh*60+sm&&cur<=eh*60+em;
+}
+ 
+function workerAlreadyCompletedToday(task,userId){
+  const td=today();
+  return completions.some(c=>c.task_id===task.id&&c.user_id===userId&&c.completed_at&&c.completed_at.slice(0,10)===td);
+}
+ 
+// ══════════════════════════════════════════════════════════════
+// VIEWS
+// ══════════════════════════════════════════════════════════════
+const VIEWS=['landing','login-view','pw-reset-view','app-shell','db-error'];
+function showView(id){VIEWS.forEach(v=>$(v).classList.toggle('hidden',v!==id));}
+ 
+function adminTab(name){
+  const tabs=['workers','staff','tasks','leaderboard','messages','notifications'];
+  tabs.forEach(t=>$(`admin-${t}`).classList.toggle('hidden',t!==name));
+  $('admin-tabs').querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===name));
+  if(name==='notifications') renderAdminNotifications();
+}
+function staffTab(name){
+  const tabs=['dashboard','workers','tasks','leaderboard','messages','notifications'];
+  tabs.forEach(t=>$(`staff-${t}`).classList.toggle('hidden',t!==name));
+  $('staff-tabs').querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===name));
+  if(name==='notifications') renderStaffNotifications();
+}
+function studentTab(name){
+  const tabs=['tasks','history','leaderboard','pitch','notifications'];
+  tabs.forEach((t,i)=>$(`s-${t}`).classList.toggle('hidden',t!==name));
+  $('student-tabs').querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===name));
+  if(name==='notifications') renderStudentNotifications();
+}
+ 
+// ══════════════════════════════════════════════════════════════
+// DATABASE INIT + LOAD
+// ══════════════════════════════════════════════════════════════
+async function loadData() {
+  setSyncing(true);
+  try {
+    await tursoBatch([
+      {sql:`CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY,name TEXT NOT NULL,username TEXT NOT NULL,password TEXT NOT NULL DEFAULT '',must_reset_pw INTEGER NOT NULL DEFAULT 1,role TEXT NOT NULL DEFAULT 'student',campus TEXT NOT NULL DEFAULT 'SLO',avatar_color TEXT NOT NULL DEFAULT '#F4A7B9',points INTEGER NOT NULL DEFAULT 0,completion_count INTEGER NOT NULL DEFAULT 0,active INTEGER NOT NULL DEFAULT 1,created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),created_by TEXT)`},
+      {sql:`CREATE TABLE IF NOT EXISTS tasks (id TEXT PRIMARY KEY,title TEXT NOT NULL,description TEXT,points_value INTEGER NOT NULL DEFAULT 10,deadline TEXT,priority TEXT NOT NULL DEFAULT 'medium',task_type TEXT NOT NULL DEFAULT 'everyone',assign_to TEXT,campus TEXT NOT NULL DEFAULT 'SLO',collab_required INTEGER NOT NULL DEFAULT 2,created_by TEXT,created_by_role TEXT NOT NULL DEFAULT 'admin',requested_by TEXT,recurrence TEXT NOT NULL DEFAULT 'none',recurrence_interval INTEGER,recurrence_day INTEGER,slot_config TEXT,one_per_worker_day INTEGER NOT NULL DEFAULT 0,created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')))`},
+      {sql:`CREATE TABLE IF NOT EXISTS completions (id TEXT PRIMARY KEY,task_id TEXT NOT NULL,user_id TEXT NOT NULL,completed_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),semester TEXT NOT NULL DEFAULT 'current',occurrence_key TEXT NOT NULL DEFAULT 'once',slot_index INTEGER NOT NULL DEFAULT 0,solo_claimed INTEGER NOT NULL DEFAULT 0,override_reason TEXT,points_voided INTEGER NOT NULL DEFAULT 0,void_reason TEXT,UNIQUE(task_id,user_id,occurrence_key))`},
+      {sql:`CREATE TABLE IF NOT EXISTS task_rejections (id TEXT PRIMARY KEY,task_id TEXT NOT NULL,rejected_by TEXT NOT NULL,reason TEXT NOT NULL,points_deducted INTEGER NOT NULL DEFAULT 0,created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')))`},
+      {sql:`CREATE TABLE IF NOT EXISTS help_requests (id TEXT PRIMARY KEY,task_id TEXT NOT NULL,user_id TEXT NOT NULL,campus TEXT NOT NULL DEFAULT 'SLO',created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),resolved INTEGER NOT NULL DEFAULT 0,resolved_by TEXT,resolved_at TEXT)`},
+      {sql:`CREATE TABLE IF NOT EXISTS point_adjustments (id TEXT PRIMARY KEY,user_id TEXT NOT NULL,campus TEXT NOT NULL DEFAULT 'SLO',type TEXT NOT NULL DEFAULT 'bonus',points INTEGER NOT NULL,reason TEXT NOT NULL,issued_by TEXT,created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')))`},
+      {sql:`CREATE TABLE IF NOT EXISTS bonus_pitches (id TEXT PRIMARY KEY,user_id TEXT NOT NULL,campus TEXT NOT NULL DEFAULT 'SLO',title TEXT NOT NULL,description TEXT NOT NULL,points_requested INTEGER NOT NULL DEFAULT 10,points_awarded INTEGER,status TEXT NOT NULL DEFAULT 'pending',admin_note TEXT,reviewed_by TEXT,created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),reviewed_at TEXT)`},
+      {sql:`CREATE TABLE IF NOT EXISTS notifications (id TEXT PRIMARY KEY,from_user TEXT,to_user TEXT,to_campus TEXT,to_role TEXT,type TEXT NOT NULL DEFAULT 'message',title TEXT,body TEXT NOT NULL,icon TEXT NOT NULL DEFAULT '📢',thread_id TEXT,ref_id TEXT,campus TEXT,created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')))`},
+      {sql:`CREATE TABLE IF NOT EXISTS notification_reads (id TEXT PRIMARY KEY,notification_id TEXT NOT NULL,user_id TEXT NOT NULL,read_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),UNIQUE(notification_id,user_id))`},
+      {sql:`CREATE TABLE IF NOT EXISTS semester_resets (id TEXT PRIMARY KEY,reset_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),semester_label TEXT NOT NULL,reset_by TEXT,campus TEXT NOT NULL DEFAULT 'SLO')`},
+      {sql:`CREATE TABLE IF NOT EXISTS daily_messages (id TEXT PRIMARY KEY,campus TEXT NOT NULL DEFAULT 'SLO',show_date TEXT NOT NULL,title TEXT,body TEXT NOT NULL,icon TEXT NOT NULL DEFAULT '📢',created_by TEXT,created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),UNIQUE(campus,show_date))`},
+      {sql:`INSERT OR IGNORE INTO users(id,name,username,password,must_reset_pw,role,campus,avatar_color) VALUES('admin-slo','SLO Admin','admin','Cougar007@',0,'admin','SLO','#F4A7B9'),('admin-ncc','NCC Admin','admin','Cougar007@',0,'admin','NCC','#D4B8E0')`},
+    ]);
+    const [u,t,c,n,nr,pa,bp,hr,dm]=await Promise.all([
+      tursoFetch('SELECT * FROM users ORDER BY role,name'),
+      tursoFetch('SELECT * FROM tasks ORDER BY created_at DESC'),
+      tursoFetch('SELECT * FROM completions'),
+      tursoFetch('SELECT * FROM notifications ORDER BY created_at DESC'),
+      tursoFetch('SELECT * FROM notification_reads'),
+      tursoFetch('SELECT * FROM point_adjustments ORDER BY created_at DESC'),
+      tursoFetch('SELECT * FROM bonus_pitches ORDER BY created_at DESC'),
+      tursoFetch('SELECT * FROM help_requests ORDER BY created_at DESC'),
+      tursoFetch('SELECT * FROM daily_messages ORDER BY show_date DESC'),
+    ]);
+    users=u.map(r=>({...r,points:Number(r.points)||0,completion_count:Number(r.completion_count)||0,must_reset_pw:r.must_reset_pw==='1'||r.must_reset_pw===1}));
+    tasks=t.map(r=>({...r,points_value:Number(r.points_value)||10,collab_required:Number(r.collab_required)||2,recurrence_interval:r.recurrence_interval?Number(r.recurrence_interval):null,recurrence_day:r.recurrence_day!=null?Number(r.recurrence_day):null,one_per_worker_day:r.one_per_worker_day==='1'||r.one_per_worker_day===1}));
+    completions=c.map(r=>({...r,solo_claimed:r.solo_claimed==='1'||r.solo_claimed===1,points_voided:r.points_voided==='1'||r.points_voided===1,slot_index:Number(r.slot_index)||0}));
+    notifications=n; notifReads=nr;
+    pointAdjs=pa.map(r=>({...r,points:Number(r.points)||0}));
+    bonusPitches=bp.map(r=>({...r,points_requested:Number(r.points_requested)||0,points_awarded:r.points_awarded!=null?Number(r.points_awarded):null}));
+    helpRequests=hr; dailyMessages=dm;
+    renderAll();
+  } catch(e){console.error(e);$('db-err-msg').textContent=e.message;showView('db-error');}
+  setSyncing(false);
+}
+ 
+function setSyncing(on){$('sync-indicator')?.classList.toggle('hidden',!on);}
+ 
+// ══════════════════════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════════════════════
+function startLogin(campus){
+  activeCampus=campus;setCampusAccent(campus);
+  $('login-icon').textContent=CAMPUS_ICONS[campus]||'🔐';
+  $('login-title').textContent=`Sign In — ${CAMPUS_LABELS[campus]}`;
+  $('login-campus-label').textContent=CAMPUS_LABELS[campus];
+  $('login-campus-label').style.color=CAMPUS_COLORS[campus];
+  $('login-username').value='';$('login-password').value='';
+  $('login-err').classList.add('hidden');showView('login-view');
+}
+ 
+function tryLogin(){
+  const uname=($('login-username').value||'').trim().toLowerCase();
+  const pw=$('login-password').value||'';
+  const match=users.find(u=>u.campus===activeCampus&&u.username.toLowerCase()===uname&&u.password===pw&&u.active!=='0'&&u.active!==0);
+  if(!match){$('login-err').classList.remove('hidden');return;}
+  $('login-err').classList.add('hidden');currentUser=match;
+  if(match.must_reset_pw){showView('pw-reset-view');return;}
+  enterApp();
+}
+ 
+function enterApp(){
+  $('header-campus-pill').textContent=CAMPUS_LABELS[activeCampus]||activeCampus;
+  $('header-username').textContent=currentUser.name;
+  const rp=$('header-role-pill');
+  rp.textContent=currentUser.role==='admin'?'Admin':currentUser.role==='staff'?'Staff':'Student';
+  rp.className=`role-pill role-${currentUser.role}`;
+  showView('app-shell');
+  $('view-admin').classList.toggle('hidden',currentUser.role!=='admin');
+  $('view-staff').classList.toggle('hidden',currentUser.role!=='staff');
+  $('view-student').classList.toggle('hidden',currentUser.role!=='student');
+  renderAll();checkMotd();
+}
+ 
+async function submitNewPassword(){
+  const p1=($('new-pw1').value||'').trim(),p2=($('new-pw2').value||'').trim();
+  const err=$('pw-reset-err');
+  if(p1.length<4){err.textContent='Password must be at least 4 characters.';err.classList.remove('hidden');return;}
+  if(p1!==p2){err.textContent='Passwords do not match.';err.classList.remove('hidden');return;}
+  err.classList.add('hidden');
+  try{
+    await tursoFetch('UPDATE users SET password=?,must_reset_pw=0 WHERE id=?',[p1,currentUser.id]);
+    currentUser.password=p1;currentUser.must_reset_pw=false;await loadData();enterApp();
+  }catch(e){err.textContent='Error: '+e.message;err.classList.remove('hidden');}
+}
+ 
+function signOut(){currentUser=null;activeCampus=null;document.documentElement.style.setProperty('--campus','#F4A7B9');showView('landing');}
+ 
+// ══════════════════════════════════════════════════════════════
+// RENDER ALL
+// ══════════════════════════════════════════════════════════════
+function renderAll(){
+  if(!currentUser) return;
+  updateNotifBadges();
+  if(currentUser.role==='admin'){
+    renderUserLists();renderAdminTasks();renderAdminLb();renderAdminMessages();
+    renderPitchBanner('admin');renderHelpBanner('admin');renderAllPitches();populateAssignSelects();
+  } else if(currentUser.role==='staff'){
+    renderUserLists();renderStaffHero();renderStaffMyTasks();renderStaffTasks();
+    renderStaffLb();renderStaffMessages();renderPitchBanner('staff');renderHelpBanner('staff');populateAssignSelects();
+  } else {
+    renderStudentHero();renderStudentTasks();renderStudentHistory();renderStudentLb();renderStudentPitches();
+  }
+}
+ 
+// ══════════════════════════════════════════════════════════════
+// AVATAR + SWATCHES
+// ══════════════════════════════════════════════════════════════
+function avatarEl(user,sizeClass='avatar-md'){
+  const d=document.createElement('div');d.className=`avatar ${sizeClass}`;
+  d.style.background=user.avatar_color||'#F4A7B9';d.style.boxShadow=`0 0 16px ${user.avatar_color||'#F4A7B9'}55`;
+  d.textContent=initials(user.name);return d;
+}
+ 
+function buildSwatches(containerId,colorVar,setter){
+  const c=$(containerId);if(!c)return;c.innerHTML='';
+  AVATAR_COLORS.forEach(col=>{
+    const btn=document.createElement('button');btn.type='button';
+    btn.className=`swatch${col===colorVar?' active':''}`;btn.style.background=col;btn.dataset.color=col;
+    btn.onclick=()=>{setter(col);c.querySelectorAll('.swatch').forEach(s=>s.classList.toggle('active',s.dataset.color===col));};
+    c.appendChild(btn);
+  });
+}
+ 
+// ══════════════════════════════════════════════════════════════
+// USER LISTS
+// ══════════════════════════════════════════════════════════════
+function renderUserLists(){
+  if(currentUser.role==='admin'){
+    renderList('worker-list','no-workers-msg','workers-campus-label',campusUsers('student'),true);
+    renderList('staff-list','no-staff-msg','staff-campus-label',campusUsers('staff'),false);
+    const d=$('w-campus-display');if(d)d.textContent=`${CAMPUS_ICONS[activeCampus]||''} ${CAMPUS_LABELS[activeCampus]||''}`;
+  } else {
+    renderList('staff-worker-list','no-staff-workers','staff-workers-label',campusUsers('student'),true);
+    const sl=$('staff-workers-label');if(sl)sl.textContent=CAMPUS_LABELS[activeCampus]||'';
+  }
+}
+ 
+function renderList(listId,emptyId,labelId,userArr,showPts){
+  const list=$(listId);if(!list)return;list.innerHTML='';
+  const emptyEl=$(emptyId);if(emptyEl)emptyEl.classList.toggle('hidden',userArr.length>0);
+  const lbl=$(labelId);if(lbl)lbl.textContent=CAMPUS_LABELS[activeCampus]||'';
+  userArr.forEach(u=>{
+    const card=document.createElement('div');card.className='user-card';
+    card.onclick=e=>{if(e.target.tagName==='BUTTON')return;openProfileModal(u);};
+    card.appendChild(avatarEl(u,'avatar-md'));
+    const info=document.createElement('div');info.className='user-card-info';
+    info.innerHTML=`<div class="user-card-name">${u.name}</div><div class="user-card-sub">@${u.username}${u.must_reset_pw?'  <span style="color:#C0294A;font-size:.72rem">🔑 must reset</span>':''}</div>`;
+    card.appendChild(info);
+    if(showPts){const pts=document.createElement('div');pts.className='user-card-pts';pts.innerHTML=`<div class="num">${u.points}</div><div class="lbl">pts</div>`;card.appendChild(pts);}
+    else{const ct=document.createElement('div');ct.className='user-card-pts';ct.innerHTML=`<div class="num">${u.completion_count}</div><div class="lbl">done</div>`;card.appendChild(ct);}
+    const btns=document.createElement('div');btns.className='user-card-btns';
+    const rb=document.createElement('button');rb.className='btn btn-warn btn-xs';rb.textContent='🔑';rb.title='Reset password';rb.onclick=()=>forcePasswordReset(u.id);btns.appendChild(rb);
+    const db=document.createElement('button');db.className='btn btn-danger btn-xs';db.textContent='✕';db.onclick=()=>removeUser(u.id,u.name);btns.appendChild(db);
+    card.appendChild(btns);list.appendChild(card);
+  });
+}
+ 
+function populateAssignSelects(){
+  const students=campusUsers('student'),staff=campusUsers('staff'),admins=campusUsers('admin');
+  const all=[...admins,...staff,...students];
+  [['t-assign-user',all],['st-assign-user',students],['dm-user',all],['sdm-user',[...admins,...staff,...students]]].forEach(([id,pool])=>{
+    const sel=$(id);if(!sel)return;const prev=sel.value;sel.innerHTML='<option value="">— Select —</option>';
+    pool.forEach(u=>{const o=document.createElement('option');o.value=u.id;o.textContent=`${u.name} (${u.role})`;if(u.id===prev)o.selected=true;sel.appendChild(o);});
+  });
+}
+// ══════════════════════════════════════════════════════════════
+// TASK ROW BUILDER
+// ══════════════════════════════════════════════════════════════
+function buildTaskRow(task,isAdmin,slotIdx=0,slot=null){
+  const userMap=Object.fromEntries(users.map(u=>[u.id,u]));
+  const effectiveStart=slot?.start||null,effectiveEnd=slot?.end||null;
+  const effectiveAssign=slot?.assign_to||task.assign_to||null;
+  const effectiveType=slot?.task_type||task.task_type||'everyone';
+  const inWindow=isInWindow(effectiveStart,effectiveEnd);
+  const oKey=occurrenceKey(task,slotIdx);
+  const occComps=completions.filter(c=>c.task_id===task.id&&c.occurrence_key===oKey);
+  const myComp=occComps.find(c=>c.user_id===currentUser?.id);
+  const myDone=!!myComp,myVoided=myDone&&myComp.points_voided;
+  const soloLocked=occComps.some(c=>c.solo_claimed);
+  const collabFull=task.task_type==='collaborative'&&(occComps.length>=task.collab_required||soloLocked);
+  const everyoneLocked=effectiveType==='everyone'&&occComps.length>0&&!myDone;
+  const isLocked=everyoneLocked||collabFull;
+  const overdue=isPast(task.deadline)&&!myDone;
+  const alreadyToday=task.one_per_worker_day&&workerAlreadyCompletedToday(task,currentUser?.id)&&!myDone;
+ 
+  const row=document.createElement('div');
+  row.className=`task-row${myDone&&!isAdmin?' done':''}${myVoided?' voided':''}${overdue?' overdue':''}${(isLocked||(!inWindow&&!myDone))&&!isAdmin?' locked':''}`;
+  const main=document.createElement('div');main.className='task-main';
+  const titleRow=document.createElement('div');titleRow.className='task-title';
+  const titleText=document.createElement('span');titleText.className='task-title-text';titleText.textContent=task.title;
+  titleRow.appendChild(titleText);
+ 
+  const pri=document.createElement('span');pri.className=`badge badge-${task.priority||'medium'}`;pri.textContent={low:'Low',medium:'Medium',high:'High'}[task.priority]||'Medium';titleRow.appendChild(pri);
+  if(task.task_type==='collaborative'){const b=document.createElement('span');b.className='badge badge-collab';b.textContent='🤝 Collab';titleRow.appendChild(b);}
+  else if(effectiveType==='everyone'){const b=document.createElement('span');b.className='badge badge-everyone';b.textContent='📢 Everyone';titleRow.appendChild(b);}
+  if(slot){const b=document.createElement('span');b.className='badge badge-slot';b.textContent=slot.label||(slotIdx===0?'🌅 Slot 1':'🌙 Slot 2');titleRow.appendChild(b);}
+  const rl=recLabel(task);if(rl){const b=document.createElement('span');b.className='badge badge-rec';b.textContent=rl;titleRow.appendChild(b);}
+  if(effectiveStart&&effectiveEnd){
+    const b=document.createElement('span');b.className='badge';
+    b.style.cssText=inWindow?'background:#EAF8F0;color:#1A6B44;border:1px solid #A0D9BB':'background:#FFF8E0;color:#7A5500;border:1px solid #FFEAA0';
+    b.textContent=`🕐 ${fmtTime(effectiveStart)}–${fmtTime(effectiveEnd)}`;titleRow.appendChild(b);
+  }
+  if(myVoided){const b=document.createElement('span');b.className='badge';b.style.cssText='background:#FFF0F2;color:#C0294A;border:1px solid #F4A7B9';b.textContent='⚠️ Points voided';titleRow.appendChild(b);}
+  main.appendChild(titleRow);
+  if(task.description){const d=document.createElement('div');d.className='task-desc';d.textContent=task.description;main.appendChild(d);}
+  const meta=document.createElement('div');meta.className='task-meta';
+  if(task.points_value&&currentUser?.role==='student'){const p=document.createElement('span');p.className='task-pts';p.textContent=`+${task.points_value}pt`;meta.appendChild(p);}
+  if(effectiveType==='specific'&&effectiveAssign){const a=document.createElement('span');a.className='task-assign';a.textContent=`→ ${userMap[effectiveAssign]?.name||'?'}`;meta.appendChild(a);}
+  if(task.deadline){const dl=document.createElement('span');dl.className=`task-deadline ${overdue?'overdue':'ok'}`;dl.textContent=(overdue?'⚠️ ':'📅 ')+fmtDate(task.deadline);meta.appendChild(dl);}
+  if(task.task_type==='collaborative'){const cp=document.createElement('span');cp.className='collab-progress';cp.textContent=soloLocked?'🔒 Solo done':`${occComps.length}/${task.collab_required} done`;meta.appendChild(cp);}
+  main.appendChild(meta);row.appendChild(main);
+ 
+  const actions=document.createElement('div');actions.className='task-actions';
+  if(isAdmin){
+    const cnt=document.createElement('span');cnt.style.cssText='color:var(--muted);font-size:.75rem;background:var(--surface2);border-radius:6px;padding:.2rem .5rem;border:1px solid var(--border)';cnt.textContent=`${occComps.length} done`;actions.appendChild(cnt);
+    const eb=document.createElement('button');eb.className='btn btn-ghost btn-xs';eb.textContent='✏️';eb.onclick=()=>openEditModal(task);actions.appendChild(eb);
+    const del=document.createElement('button');del.className='btn btn-danger btn-xs';del.textContent='✕';del.onclick=()=>deleteTask(task.id);actions.appendChild(del);
+  } else {
+    if(myDone){
+      const dc=document.createElement('span');dc.className=myVoided?'voided-note':'done-check';dc.textContent=myVoided?'✓ Done (pts voided)':'✓ Done';actions.appendChild(dc);
+    } else if(isLocked){
+      const lk=document.createElement('span');lk.style.cssText='color:var(--faint);font-size:.78rem';lk.textContent=everyoneLocked?'✓ Done by team':'🔒 Full';actions.appendChild(lk);
+    } else if(!inWindow){
+      const wl=document.createElement('div');wl.style.cssText='font-size:.78rem;color:#7A5500;font-weight:600;background:#FFF8E0;border:1px solid #FFEAA0;border-radius:8px;padding:.35rem .7rem';
+      wl.textContent=`🕐 Available ${fmtTime(effectiveStart)}–${fmtTime(effectiveEnd)}`;actions.appendChild(wl);
+    } else if(alreadyToday){
+      const wb=document.createElement('button');wb.className='btn btn-warn btn-sm';wb.textContent='⚠️ Complete again?';
+      wb.onclick=()=>{overridingTask=task;overridingSlot={slotIdx,oKey};$('override-modal').classList.add('show');};actions.appendChild(wb);
+    } else {
+      const btn=document.createElement('button');btn.className='btn btn-success btn-sm';btn.textContent='✓ Complete';
+      btn.onclick=()=>completeTask(task,false,slotIdx,oKey);actions.appendChild(btn);
+      if(task.task_type==='specific'&&String(effectiveAssign)===String(currentUser?.id)){
+        if(currentUser.points>=(task.points_value*2)){const db=document.createElement('button');db.className='btn btn-danger btn-sm';db.textContent='✕ Decline';db.onclick=()=>openDeclineModal(task);actions.appendChild(db);}
+        const hb=document.createElement('button');hb.className='btn btn-warn btn-sm';hb.textContent='🆘 Need Help';hb.onclick=()=>requestHelp(task);actions.appendChild(hb);
+      }
+      if(task.task_type==='collaborative'){
+        const sl=document.createElement('label');sl.className='solo-claim';
+        sl.innerHTML=`<input type="checkbox" id="solo-${task.id}-${slotIdx}"/> I did this solo`;
+        sl.onclick=e=>{if(e.target.tagName==='INPUT'&&e.target.checked){if(confirm('Mark as solo? Others cannot claim points.'))completeTask(task,true,slotIdx,oKey);else e.target.checked=false;}};
+        actions.appendChild(sl);
+      }
+    }
+  }
+  row.appendChild(actions);return row;
+}
+ 
+function buildTaskRows(task,isAdmin){
+  const slots=parsedSlots(task);
+  if(!slots.length) return [buildTaskRow(task,isAdmin,0,null)];
+  return slots.map((slot,i)=>buildTaskRow(task,isAdmin,i,slot));
+}
+ 
+// ══════════════════════════════════════════════════════════════
+// ADMIN RENDER
+// ══════════════════════════════════════════════════════════════
+function renderAdminTasks(){
+  const list=$('admin-task-list');if(!list)return;list.innerHTML='';
+  const ct=campusTasks();$('no-tasks-admin').classList.toggle('hidden',ct.length>0);
+  $('tasks-campus-label').textContent=CAMPUS_LABELS[activeCampus]||'';
+  ct.forEach(t=>buildTaskRows(t,true).forEach(r=>list.appendChild(r)));
+}
+function renderAdminLb(){buildLb('admin-lb',campusUsers('student'));const l=$('lb-campus-label');if(l)l.textContent=CAMPUS_LABELS[activeCampus]||'';}
+ 
+function renderAdminMessages(){
+  const list=$('msg-list');if(!list)return;list.innerHTML='';
+  const msgs=dailyMessages.filter(m=>m.campus===activeCampus);
+  $('no-msgs-admin').classList.toggle('hidden',msgs.length>0);
+  const td=today();
+  msgs.forEach(m=>{
+    const isToday=m.show_date===td,isPst=m.show_date<td;
+    const card=document.createElement('div');card.className=`msg-card${isToday?' today':m.show_date>td?' scheduled':''}`;
+    const icon=document.createElement('div');icon.style.cssText='font-size:1.5rem;flex-shrink:0';icon.textContent=m.icon||'📢';card.appendChild(icon);
+    const body=document.createElement('div');body.className='msg-card-body';
+    body.innerHTML=`<div class="msg-card-date">${fmtDate(m.show_date)}</div>${m.title?`<div style="font-weight:700;font-size:.88rem">${m.title}</div>`:''}<div class="msg-card-text">${m.body}</div><span class="msg-status ${isToday?'msg-status-today':isPst?'msg-status-past':'msg-status-scheduled'}">${isToday?'📣 Today':isPst?'✓ Past':'⏰ Scheduled'}</span>`;
+    card.appendChild(body);
+    const btns=document.createElement('div');btns.style.cssText='display:flex;flex-direction:column;gap:.35rem;flex-shrink:0';
+    const eb=document.createElement('button');eb.className='btn btn-ghost btn-xs';eb.textContent='✏️';eb.onclick=()=>openMsgEditModal(m);btns.appendChild(eb);
+    const db=document.createElement('button');db.className='btn btn-danger btn-xs';db.textContent='✕';db.onclick=()=>deleteMessage(m.id);btns.appendChild(db);
+    card.appendChild(btns);list.appendChild(card);
+  });
+}
+ 
+function renderAdminNotifications(){
+  const list=$('admin-notif-list');if(!list)return;list.innerHTML='';
+  const my=getMyNotifications();$('no-admin-notifs').classList.toggle('hidden',my.length>0);
+  my.forEach(n=>list.appendChild(buildNotifRow(n)));
+}
+ 
+function renderPitchBanner(role){
+  const pending=bonusPitches.filter(p=>p.campus===activeCampus&&p.status==='pending');
+  const bid=role==='staff'?'staff-pitch-banner':'pitch-banner',iid=role==='staff'?'staff-pitch-items':'pitch-items';
+  const banner=$(bid),items=$(iid);if(!banner||!items)return;
+  banner.classList.toggle('hidden',pending.length===0);items.innerHTML='';
+  pending.forEach(p=>{
+    const u=users.find(x=>x.id===p.user_id);
+    const item=document.createElement('div');item.className='alert-item';
+    item.innerHTML=`<div class="alert-item-info"><div class="alert-item-who">${u?.name||'?'}</div><div class="alert-item-sub">${p.title} · asking ${p.points_requested}pts</div></div>`;
+    const btns=document.createElement('div');btns.className='alert-item-btns';
+    const rb=document.createElement('button');rb.className='btn btn-ghost btn-sm';rb.textContent='Review →';rb.onclick=()=>openReviewModal(p);btns.appendChild(rb);item.appendChild(btns);items.appendChild(item);
+  });
+}
+ 
+function renderHelpBanner(role){
+  const pending=helpRequests.filter(h=>h.campus===activeCampus&&!h.resolved&&h.resolved!=='1');
+  const bid=role==='staff'?'staff-help-banner':'help-banner',iid=role==='staff'?'staff-help-items':'help-items';
+  const banner=$(bid),items=$(iid);if(!banner||!items)return;
+  banner.classList.toggle('hidden',pending.length===0);items.innerHTML='';
+  pending.forEach(h=>{
+    const u=users.find(x=>x.id===h.user_id),t=tasks.find(x=>x.id===h.task_id);
+    const item=document.createElement('div');item.className='alert-item';
+    item.innerHTML=`<div class="alert-item-info"><div class="alert-item-who">${u?.name||'?'}</div><div class="alert-item-sub">needs help with: ${t?.title||'?'}</div></div>`;
+    const btns=document.createElement('div');btns.className='alert-item-btns';
+    const rb=document.createElement('button');rb.className='btn btn-success btn-sm';rb.textContent='✓ Helped';rb.onclick=()=>resolveHelp(h.id);btns.appendChild(rb);item.appendChild(btns);items.appendChild(item);
+  });
+}
+ 
+function renderAllPitches(){
+  const list=$('admin-pitch-list');if(!list)return;
+  const all=bonusPitches.filter(p=>p.campus===activeCampus).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+  $('no-pitches-admin').classList.toggle('hidden',all.length>0);list.innerHTML='';
+  all.forEach(p=>{
+    const u=users.find(x=>x.id===p.user_id);
+    const sc=p.status==='approved'?'pitch-status-approved':p.status==='denied'?'pitch-status-denied':'pitch-status-pending';
+    const sl=p.status==='approved'?`✓ ${p.points_awarded}pts`:p.status==='denied'?'✕ Denied':'⏳ Pending';
+    const row=document.createElement('div');row.className=`pitch-row ${p.status==='approved'?'approved':p.status==='denied'?'denied':''}`;
+    row.innerHTML=`<div style="flex:1;min-width:0"><div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-bottom:.2rem"><span style="font-weight:700;font-size:.88rem">${u?.name||'?'}</span><span class="pitch-status ${sc}">${sl}</span></div><div style="font-weight:600;font-size:.85rem">${p.title}</div><div style="color:var(--muted);font-size:.76rem">Asked ${p.points_requested}pts · ${fmtDate(p.created_at)}</div></div>`;
+    if(p.status==='pending'){const rb=document.createElement('button');rb.className='btn btn-ghost btn-sm';rb.textContent='Review →';rb.onclick=()=>openReviewModal(p);row.appendChild(rb);}
+    list.appendChild(row);
+  });
+}
+ 
+// ══════════════════════════════════════════════════════════════
+// STAFF RENDER
+// ══════════════════════════════════════════════════════════════
+function renderStaffHero(){
+  const hero=$('staff-hero');if(!hero)return;hero.innerHTML='';
+  hero.appendChild(avatarEl(currentUser,'avatar-xl'));
+  const info=document.createElement('div');info.className='user-hero-info';
+  const sorted=campusUsers('staff').sort((a,b)=>b.completion_count-a.completion_count);
+  const rank=sorted.findIndex(s=>s.id===currentUser.id)+1;
+  info.innerHTML=`<div class="user-hero-name serif">Hey, ${currentUser.name.split(' ')[0]}! 👋</div><div class="user-hero-sub">Staff · ${CAMPUS_LABELS[activeCampus]} · ${currentUser.completion_count} tasks completed · Rank #${rank}/${sorted.length}</div>`;
+  hero.appendChild(info);
+}
+ 
+function renderStaffMyTasks(){
+  const list=$('staff-my-tasks');if(!list)return;list.innerHTML='';
+  const mine=tasks.filter(t=>t.campus===activeCampus&&(t.assign_to===currentUser.id||t.task_type==='everyone'));
+  $('no-staff-tasks').classList.toggle('hidden',mine.length>0);
+  mine.forEach(t=>buildTaskRows(t,false).forEach(r=>list.appendChild(r)));
+}
+ 
+function renderStaffTasks(){
+  const list=$('staff-task-list');if(!list)return;list.innerHTML='';
+  const ct=campusTasks();$('no-staff-task-list').classList.toggle('hidden',ct.length>0);
+  const l=$('staff-tasks-label');if(l)l.textContent=CAMPUS_LABELS[activeCampus]||'';
+  ct.forEach(t=>buildTaskRows(t,true).forEach(r=>list.appendChild(r)));
+}
+ 
+function renderStaffLb(){buildLb('staff-lb',campusUsers('student'));const l=$('staff-lb-label');if(l)l.textContent=CAMPUS_LABELS[activeCampus]||'';}
+ 
+function renderStaffMessages(){
+  const list=$('staff-msg-list');if(!list)return;list.innerHTML='';
+  const my=getMyNotifications().filter(n=>n.type==='message');
+  $('no-staff-msgs').classList.toggle('hidden',my.length>0);my.forEach(n=>list.appendChild(buildNotifRow(n)));
+}
+ 
+function renderStaffNotifications(){
+  const list=$('staff-notif-list');if(!list)return;list.innerHTML='';
+  const my=getMyNotifications();$('no-staff-notifs').classList.toggle('hidden',my.length>0);my.forEach(n=>list.appendChild(buildNotifRow(n)));
+}
+ 
+// ══════════════════════════════════════════════════════════════
+// STUDENT RENDER
+// ══════════════════════════════════════════════════════════════
+function renderStudentHero(){
+  const hero=$('student-hero');if(!hero)return;hero.innerHTML='';
+  hero.appendChild(avatarEl(currentUser,'avatar-xl'));
+  const info=document.createElement('div');info.className='user-hero-info';
+  const sorted=[...campusUsers('student')].sort((a,b)=>b.points-a.points);
+  const rank=sorted.findIndex(s=>s.id===currentUser.id)+1;
+  const doneCount=completions.filter(c=>c.user_id===currentUser.id).length;
+  info.innerHTML=`<div class="user-hero-name serif">Hey, ${currentUser.name.split(' ')[0]}! 👋</div><div class="user-hero-sub">Rank #${rank} of ${sorted.length} · ${doneCount} completions this semester</div>`;
+  hero.appendChild(info);
+  const pbox=document.createElement('div');pbox.className='user-hero-pts';
+  pbox.innerHTML=`<div class="pts-big">${currentUser.points}</div><div class="pts-label">total points</div>`;
+  hero.appendChild(pbox);
+  const vis=myVisibleTasks();
+  const pend=vis.filter(({task,slotIdx,oKey})=>!completions.some(c=>c.task_id===task.id&&c.user_id===currentUser.id&&c.occurrence_key===oKey));
+  const tab=$('student-tabs')?.querySelectorAll('.tab')?.[0];if(tab)tab.textContent=`📋 My Tasks (${pend.length})`;
+}
+ 
+function myVisibleTasks(){
+  const result=[];
+  tasks.filter(t=>t.campus===activeCampus).forEach(t=>{
+    const slots=parsedSlots(t);
+    if(!slots.length){
+      const canSee=t.task_type==='everyone'||t.task_type==='collaborative'||(t.task_type==='specific'&&String(t.assign_to)===String(currentUser?.id));
+      if(canSee){result.push({task:t,slotIdx:0,oKey:occurrenceKey(t,0),slot:null});}
+    } else {
+      slots.forEach((slot,i)=>{
+        const st=slot.task_type||'everyone';
+        const canSee=st==='everyone'||(st==='specific'&&String(slot.assign_to)===String(currentUser?.id));
+        if(canSee)result.push({task:t,slotIdx:i,oKey:occurrenceKey(t,i),slot});
+      });
+    }
+  });
+  return result;
+}
+ 
+function renderStudentTasks(){
+  const list=$('student-task-list');if(!list)return;list.innerHTML='';
+  const vis=myVisibleTasks();
+  if(!vis.length){list.innerHTML='<div class="empty"><div class="icon">🎉</div><p>All caught up!</p></div>';return;}
+  vis.forEach(({task,slotIdx,slot})=>list.appendChild(buildTaskRow(task,false,slotIdx,slot)));
+}
+ 
+function renderStudentHistory(){
+  const list=$('student-history-list');if(!list)return;list.innerHTML='';
+  const myComps=completions.filter(c=>c.user_id===currentUser.id).map(c=>({type:'comp',date:c.completed_at,...c,task:tasks.find(t=>t.id===c.task_id)})).filter(c=>c.task);
+  const myAdjs=pointAdjs.filter(p=>p.user_id===currentUser.id).map(p=>({type:'adj',date:p.created_at,...p}));
+  const all=[...myComps,...myAdjs].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(!all.length){list.innerHTML='<p class="muted" style="font-size:.88rem">Nothing here yet!</p>';return;}
+  all.forEach(item=>{
+    if(item.type==='comp'){
+      const row=document.createElement('div');row.className=item.points_voided?'adj-row voided':'hist-row';
+      const rl=recLabel(item.task);
+      row.innerHTML=`${item.points_voided?'<span class="adj-icon">⚠️</span>':'<span class="hist-check">✓</span>'}<span class="hist-title">${item.task.title}${rl?` <span style="color:var(--purple);font-size:.72rem">${rl}</span>`:''}</span><span class="hist-pts ${item.points_voided?'minus':''}">${item.points_voided?'voided':'+'+item.task.points_value+'pt'}</span><span class="hist-date">${fmtDate(item.completed_at)}</span>`;
+      if(item.points_voided&&item.void_reason){const vn=document.createElement('div');vn.style.cssText='width:100%;font-size:.75rem;color:#C0294A;margin-top:.25rem;font-style:italic';vn.textContent=`Reason: ${item.void_reason}`;row.appendChild(vn);}
+      list.appendChild(row);
+    } else {
+      const isBonus=item.type==='bonus';
+      const row=document.createElement('div');row.className=`adj-row ${isBonus?'bonus':'deduct'}`;
+      row.innerHTML=`<span class="adj-icon">${isBonus?'⭐':'📉'}</span><div class="adj-info"><div class="adj-title">${isBonus?'Bonus':'Deduction'}</div><div class="adj-reason">${item.reason||''}</div></div><span class="adj-pts ${isBonus?'plus':'minus'}">${isBonus?'+':'−'}${Math.abs(item.points)}pt</span><span class="adj-date">${fmtDate(item.created_at)}</span>`;
+      list.appendChild(row);
+    }
+  });
+}
+ 
+function renderStudentLb(){buildLb('student-lb',campusUsers('student'));const l=$('student-lb-label');if(l)l.textContent=CAMPUS_LABELS[activeCampus]||'';}
+ 
+function renderStudentPitches(){
+  const list=$('student-pitch-list');if(!list)return;list.innerHTML='';
+  const mine=bonusPitches.filter(p=>p.user_id===currentUser.id).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+  $('no-pitches-student').classList.toggle('hidden',mine.length>0);
+  mine.forEach(p=>{
+    const sc=p.status==='approved'?'pitch-status-approved':p.status==='denied'?'pitch-status-denied':'pitch-status-pending';
+    const sl=p.status==='approved'?`✓ Approved — ${p.points_awarded}pts`:p.status==='denied'?'✕ Not approved':'⏳ Pending review';
+    const row=document.createElement('div');row.className=`pitch-row ${p.status==='approved'?'approved':p.status==='denied'?'denied':''}`;
+    row.innerHTML=`<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:.9rem">${p.title}</div><div style="color:var(--muted);font-size:.78rem;line-height:1.45;margin:.2rem 0">${p.description}</div><div style="font-size:.77rem;color:#5C2A70;font-weight:600">Asked ${p.points_requested}pts</div>${p.admin_note?`<div style="font-size:.75rem;color:var(--muted);font-style:italic;margin-top:.2rem">Note: ${p.admin_note}</div>`:''}<span class="pitch-status ${sc}">${sl}</span></div><span style="color:var(--faint);font-size:.74rem;flex-shrink:0">${fmtDate(p.created_at)}</span>`;
+    list.appendChild(row);
+  });
+}
+ 
+function renderStudentNotifications(){
+  const list=$('student-notif-list');if(!list)return;list.innerHTML='';
+  const my=getMyNotifications();$('no-student-notifs').classList.toggle('hidden',my.length>0);my.forEach(n=>list.appendChild(buildNotifRow(n)));
+}
+ 
+// ══════════════════════════════════════════════════════════════
+// NOTIFICATIONS
+// ══════════════════════════════════════════════════════════════
+function getMyNotifications(){
+  if(!currentUser) return [];
+  return notifications.filter(n=>{
+    if(n.thread_id) return false;
+    if(n.to_user===currentUser.id) return true;
+    if(n.to_campus===activeCampus&&(!n.to_role||n.to_role==='all')) return true;
+    if(n.to_campus===activeCampus&&n.to_role===currentUser.role) return true;
+    if(n.to_campus===activeCampus&&n.to_role==='students'&&currentUser.role==='student') return true;
+    if(n.to_campus===activeCampus&&n.to_role==='staff'&&(currentUser.role==='staff'||currentUser.role==='admin')) return true;
+    return false;
+  }).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+}
+ 
+function isRead(notifId){return notifReads.some(r=>r.notification_id===notifId&&r.user_id===currentUser?.id);}
+ 
+function updateNotifBadges(){
+  const unread=getMyNotifications().filter(n=>!isRead(n.id)).length;
+  ['admin-notif-tab','staff-notif-tab','student-notif-tab'].forEach(id=>{
+    const tab=$(id);if(!tab)return;
+    let badge=tab.querySelector('.tab-badge');
+    if(unread>0){if(!badge){badge=document.createElement('span');badge.className='tab-badge';tab.appendChild(badge);}badge.textContent=unread>9?'9+':unread;}
+    else badge?.remove();
+  });
+}
+ 
+function buildNotifRow(n){
+  const fromUser=users.find(u=>u.id===n.from_user);
+  const unread=!isRead(n.id);
+  if(unread) markRead(n.id);
+  const replies=notifications.filter(r=>r.thread_id===n.id).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+  const row=document.createElement('div');row.className=`notif-row${unread?' unread':''}`;
+  const icon=document.createElement('div');icon.className='notif-icon';icon.textContent=n.icon||'📢';row.appendChild(icon);
+  const body=document.createElement('div');body.className='notif-body';
+  if(n.title){const t=document.createElement('div');t.className='notif-title';t.textContent=n.title;body.appendChild(t);}
+  const txt=document.createElement('div');txt.className='notif-text';txt.textContent=n.body;body.appendChild(txt);
+  const meta=document.createElement('div');meta.className='notif-meta';
+  if(fromUser){const f=document.createElement('span');f.className='notif-from';f.textContent=`From: ${fromUser.name}`;meta.appendChild(f);}
+  const d=document.createElement('span');d.className='notif-date';d.textContent=fmtDate(n.created_at);meta.appendChild(d);
+  body.appendChild(meta);
+  if(replies.length){
+    const thread=document.createElement('div');thread.className='notif-thread';
+    replies.forEach(r=>{
+      const ru=users.find(u=>u.id===r.from_user);
+      const rr=document.createElement('div');rr.className='thread-reply';
+      rr.innerHTML=`<div class="thread-reply-from">${ru?.name||'Unknown'} · ${fmtDate(r.created_at)}</div><div class="thread-reply-text">${r.body}</div>`;
+      thread.appendChild(rr);
+    });
+    body.appendChild(thread);
+  }
+  if(n.type!=='motd'&&n.type!=='system'){
+    const rb=document.createElement('button');rb.className='btn btn-ghost btn-sm';rb.textContent='↩ Reply';rb.style.marginTop='.5rem';rb.onclick=()=>openReplyModal(n);body.appendChild(rb);
+  }
+  row.appendChild(body);return row;
+}
+ 
+async function markRead(notifId){
+  if(isRead(notifId)) return;
+  try{await tursoFetch('INSERT OR IGNORE INTO notification_reads(id,notification_id,user_id) VALUES(?,?,?)',[uuid(),notifId,currentUser.id]);
+  notifReads.push({id:uuid(),notification_id:notifId,user_id:currentUser.id});}catch{}
+}
+ 
+// ══════════════════════════════════════════════════════════════
+// LEADERBOARD
+// ══════════════════════════════════════════════════════════════
+function buildLb(containerId,userArr){
+  const el=$(containerId);if(!el)return;el.innerHTML='';
+  const medals=['🥇','🥈','🥉'];
+  const sorted=[...userArr].sort((a,b)=>b.points-a.points);
+  if(!sorted.length){el.innerHTML='<p class="muted" style="font-size:.88rem">No entries yet.</p>';return;}
+  sorted.forEach((u,i)=>{
+    const row=document.createElement('div');row.className='lb-row';
+    const med=document.createElement('span');med.className=i<3?'lb-medal':'lb-rank';med.textContent=i<3?medals[i]:`${i+1}`;row.appendChild(med);
+    row.appendChild(avatarEl(u,'avatar-sm'));
+    const nm=document.createElement('span');nm.className='lb-name';nm.style.fontWeight=i===0?'700':'400';nm.textContent=u.name;row.appendChild(nm);
+    const pts=document.createElement('span');pts.className='lb-pts';pts.innerHTML=`${u.points}<span style="color:var(--faint);font-weight:400;font-size:.74rem"> pts</span>`;row.appendChild(pts);
+    el.appendChild(row);
+  });
+}
+ 
+// ══════════════════════════════════════════════════════════════
+// CRUD — USERS
+// ══════════════════════════════════════════════════════════════
+async function addUser(role){
+  const nameId=role==='staff'?'s-name':'w-name',unameId=role==='staff'?'s-username':'w-username';
+  const name=($(`${nameId}`).value||'').trim(),uname=($(`${unameId}`).value||'').trim();
+  if(!name||!uname)return alert('Name and username are required.');
+  const color=role==='staff'?selectedColorS:selectedColorW;
+  setSyncing(true);
+  try{
+    await tursoFetch('INSERT INTO users(id,name,username,password,must_reset_pw,role,campus,avatar_color,created_by) VALUES(?,?,?,?,1,?,?,?,?)',[uuid(),name,uname.toLowerCase(),'',role,activeCampus,color,currentUser.id]);
+    $(`${nameId}`).value='';$(`${unameId}`).value='';await loadData();
+  }catch(e){alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+async function staffAddWorker(){
+  const name=($('sw-name').value||'').trim(),uname=($('sw-username').value||'').trim();
+  if(!name||!uname)return alert('Name and username are required.');
+  setSyncing(true);
+  try{
+    await tursoFetch('INSERT INTO users(id,name,username,password,must_reset_pw,role,campus,avatar_color,created_by) VALUES(?,?,?,?,1,?,?,?,?)',[uuid(),name,uname.toLowerCase(),'','student',activeCampus,selectedColorSW,currentUser.id]);
+    $('sw-name').value='';$('sw-username').value='';await loadData();
+  }catch(e){alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+async function removeUser(id,name){
+  if(!confirm(`Remove ${name}?`))return;
+  setSyncing(true);
+  try{await tursoFetch('UPDATE users SET active=0 WHERE id=?',[id]);await loadData();}catch(e){alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+async function forcePasswordReset(userId){
+  if(!confirm('Force this user to set a new password on next login?'))return;
+  setSyncing(true);
+  try{await tursoFetch('UPDATE users SET must_reset_pw=1 WHERE id=?',[userId]);await loadData();}catch(e){alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+function triggerPasswordReset(){if(profileUser)forcePasswordReset(profileUser.id);}
+ 
+// ══════════════════════════════════════════════════════════════
+// CRUD — TASKS
+// ══════════════════════════════════════════════════════════════
+function onAssignTypeChange(){const v=$('t-assign-type').value;$('t-assign-user-field').classList.toggle('hidden',v==='everyone');$('t-collab-field').classList.toggle('hidden',v!=='collaborative');}
+function onRecurrenceChange(){const v=$('t-recurrence').value;$('rec-weekly-opts').classList.toggle('hidden',v!=='weekly');$('rec-monthly-opts').classList.toggle('hidden',v!=='monthly');$('rec-interval-opts').classList.toggle('hidden',v!=='interval');}
+function onStaffAssignTypeChange(){const v=$('st-assign-type').value;$('st-assign-user-field').classList.toggle('hidden',!['specific','request'].includes(v));}
+function onStaffRecurrenceChange(){const v=$('st-recurrence').value;$('st-rec-weekly').classList.toggle('hidden',v!=='weekly');$('st-rec-monthly').classList.toggle('hidden',v!=='monthly');$('st-rec-interval').classList.toggle('hidden',v!=='interval');}
+function onEditRecurrenceChange(){const v=$('edit-recurrence').value;$('edit-rec-weekly').classList.toggle('hidden',v!=='weekly');$('edit-rec-monthly').classList.toggle('hidden',v!=='monthly');$('edit-rec-interval').classList.toggle('hidden',v!=='interval');}
+ 
+function addSlot(){const idx=newTaskSlots.length;newTaskSlots.push({start:'',end:'',task_type:'everyone',assign_to:null,label:idx===0?'Morning':'Evening'});renderSlotList('slot-list',newTaskSlots,'new');}
+function removeSlot(idx){newTaskSlots.splice(idx,1);renderSlotList('slot-list',newTaskSlots,'new');}
+function addEditSlot(){const idx=editTaskSlots.length;editTaskSlots.push({start:'',end:'',task_type:'everyone',assign_to:null,label:idx===0?'Morning':'Evening'});renderSlotList('edit-slot-list',editTaskSlots,'edit');}
+function removeEditSlot(idx){editTaskSlots.splice(idx,1);renderSlotList('edit-slot-list',editTaskSlots,'edit');}
+ 
+function renderSlotList(containerId,slotsArr,prefix){
+  const c=$(containerId);if(!c)return;c.innerHTML='';
+  slotsArr.forEach((slot,i)=>{
+    const box=document.createElement('div');box.className='slot-box';
+    box.innerHTML=`<div class="slot-box-header"><span class="slot-box-label">${slot.label||`Slot ${i+1}`}</span><button type="button" class="btn btn-danger btn-xs" onclick="${prefix==='new'?'removeSlot':'removeEditSlot'}(${i})">✕</button></div>`;
+    const row1=document.createElement('div');row1.style.cssText='display:flex;gap:.5rem;align-items:center;margin-bottom:.4rem';
+    const s=document.createElement('input');s.type='time';s.className='input';s.style.flex='1';s.value=slot.start;s.onchange=e=>{slotsArr[i].start=e.target.value;};
+    const sp=document.createElement('span');sp.style.cssText='color:var(--muted);font-size:.82rem;flex-shrink:0';sp.textContent='to';
+    const e=document.createElement('input');e.type='time';e.className='input';e.style.flex='1';e.value=slot.end;e.onchange=ev=>{slotsArr[i].end=ev.target.value;};
+    row1.appendChild(s);row1.appendChild(sp);row1.appendChild(e);box.appendChild(row1);
+    const lbl=document.createElement('input');lbl.className='input';lbl.placeholder='Label (e.g. Morning)';lbl.value=slot.label||'';lbl.style.marginBottom='.4rem';lbl.onchange=ev=>{slotsArr[i].label=ev.target.value;};box.appendChild(lbl);
+    const asel=document.createElement('select');asel.className='input';asel.innerHTML='<option value="everyone">📢 Everyone</option><option value="specific">👤 Specific</option>';
+    asel.value=slot.task_type||'everyone';asel.onchange=ev=>{slotsArr[i].task_type=ev.target.value;renderSlotList(containerId,slotsArr,prefix);};box.appendChild(asel);
+    if((slot.task_type||'everyone')==='specific'){
+      const usel=document.createElement('select');usel.className='input';usel.style.marginTop='.4rem';usel.innerHTML='<option value="">— Select —</option>';
+      campusUsers('student').forEach(u=>{const o=document.createElement('option');o.value=u.id;o.textContent=u.name;if(u.id===slot.assign_to)o.selected=true;usel.appendChild(o);});
+      usel.onchange=ev=>{slotsArr[i].assign_to=ev.target.value||null;};box.appendChild(usel);
+    }
+    c.appendChild(box);
+  });
+}
+ 
+async function addTask(){
+  const title=($('t-title').value||'').trim();if(!title)return alert('Please enter a task title.');
+  const atype=$('t-assign-type').value;
+  const assignTo=(atype==='specific'||atype==='collaborative')?($('t-assign-user').value||null):null;
+  const rec=$('t-recurrence').value;
+  const recDay=rec==='weekly'?Number($('t-rec-weekday').value):rec==='monthly'?Number($('t-rec-monthday').value):null;
+  const recInt=rec==='interval'?Number($('t-rec-interval').value):null;
+  const slotConfig=newTaskSlots.length?JSON.stringify(newTaskSlots):null;
+  const onePer=$('t-one-per-worker').checked?1:0;
+  setSyncing(true);
+  try{
+    await tursoFetch('INSERT INTO tasks(id,title,description,points_value,deadline,priority,task_type,assign_to,campus,collab_required,created_by,created_by_role,recurrence,recurrence_interval,recurrence_day,slot_config,one_per_worker_day) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+      [uuid(),title,($('t-desc').value||'').trim()||null,Number($('t-pts').value)||10,$('t-deadline').value||null,$('t-priority').value,atype==='specific'?'specific':atype==='collaborative'?'collaborative':'everyone',assignTo,activeCampus,Number($('t-collab-required').value)||2,currentUser.id,currentUser.role,rec,recInt,recDay,slotConfig,onePer]);
+    $('t-title').value='';$('t-desc').value='';$('t-pts').value='10';$('t-deadline').value='';$('t-priority').value='medium';$('t-recurrence').value='none';$('t-assign-type').value='everyone';$('t-one-per-worker').checked=false;
+    onRecurrenceChange();onAssignTypeChange();newTaskSlots=[];renderSlotList('slot-list',newTaskSlots,'new');await loadData();
+  }catch(e){alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+async function staffAddTask(){
+  const title=($('st-title').value||'').trim();if(!title)return alert('Please enter a task title.');
+  const atype=$('st-assign-type').value;
+  let assignTo=null,taskType='everyone',requestedBy=null;
+  if(atype==='self'){assignTo=currentUser.id;taskType='specific';}
+  else if(atype==='specific'){assignTo=$('st-assign-user').value||null;taskType='specific';}
+  else if(atype==='request'){assignTo=$('st-assign-user').value||null;taskType='specific';requestedBy=currentUser.id;}
+  const rec=$('st-recurrence').value;
+  const recDay=rec==='weekly'?Number($('st-rec-weekday').value):rec==='monthly'?Number($('st-rec-monthday').value):null;
+  const recInt=rec==='interval'?Number($('st-rec-interval-val').value):null;
+  setSyncing(true);
+  try{
+    await tursoFetch('INSERT INTO tasks(id,title,description,points_value,deadline,priority,task_type,assign_to,campus,collab_required,created_by,created_by_role,requested_by,recurrence,recurrence_interval,recurrence_day) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+      [uuid(),title,($('st-desc').value||'').trim()||null,Number($('st-pts').value)||10,null,$('st-priority').value,taskType,assignTo,activeCampus,2,currentUser.id,'staff',requestedBy,rec,recInt,recDay]);
+    if(requestedBy&&assignTo){await sendNotification({to_user:assignTo,type:'message',title:'New Task Request',body:`${currentUser.name} assigned you: "${title}"`,icon:'📋',campus:activeCampus});}
+    $('st-title').value='';$('st-desc').value='';$('st-pts').value='10';$('st-priority').value='medium';$('st-recurrence').value='none';$('st-assign-type').value='everyone';
+    onStaffRecurrenceChange();onStaffAssignTypeChange();await loadData();
+  }catch(e){alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+async function deleteTask(id){if(!confirm('Delete this task?'))return;setSyncing(true);try{await tursoFetch('DELETE FROM tasks WHERE id=?',[id]);await loadData();}catch(e){alert('Error: '+e.message);}setSyncing(false);}
+ 
+// ══════════════════════════════════════════════════════════════
+// EDIT MODAL
+// ══════════════════════════════════════════════════════════════
+function openEditModal(task){
+  editingTaskId=task.id;$('edit-title').value=task.title||'';$('edit-desc').value=task.description||'';
+  $('edit-pts').value=task.points_value||10;$('edit-priority').value=task.priority||'medium';$('edit-deadline').value=task.deadline||'';
+  $('edit-recurrence').value=task.recurrence||'none';$('edit-rec-weekday').value=task.recurrence_day??1;
+  $('edit-rec-monthday').value=task.recurrence_day??1;$('edit-rec-interval-val').value=task.recurrence_interval??7;
+  $('edit-collab-wrap').style.display=task.task_type==='collaborative'?'':'none';$('edit-collab-required').value=task.collab_required||2;
+  $('edit-one-per-worker').checked=!!task.one_per_worker_day;onEditRecurrenceChange();
+  editTaskSlots=parsedSlots(task);renderSlotList('edit-slot-list',editTaskSlots,'edit');
+  $('edit-modal').classList.add('show');
+}
+function closeEditModal(){$('edit-modal').classList.remove('show');editingTaskId=null;}
+ 
+async function saveEdit(){
+  if(!editingTaskId)return;
+  const newPts=Number($('edit-pts').value)||10,rec=$('edit-recurrence').value;
+  const recDay=rec==='weekly'?Number($('edit-rec-weekday').value):rec==='monthly'?Number($('edit-rec-monthday').value):null;
+  const recInt=rec==='interval'?Number($('edit-rec-interval-val').value):null;
+  const slotConfig=editTaskSlots.length?JSON.stringify(editTaskSlots):null;
+  setSyncing(true);
+  try{
+    await tursoFetch('UPDATE tasks SET title=?,description=?,points_value=?,deadline=?,priority=?,collab_required=?,recurrence=?,recurrence_interval=?,recurrence_day=?,slot_config=?,one_per_worker_day=? WHERE id=?',
+      [($('edit-title').value||'').trim(),($('edit-desc').value||'').trim()||null,newPts,$('edit-deadline').value||null,$('edit-priority').value,Number($('edit-collab-required').value)||2,rec,recInt,recDay,slotConfig,$('edit-one-per-worker').checked?1:0,editingTaskId]);
+    const oldTask=tasks.find(t=>t.id===editingTaskId),oldPts=oldTask?.points_value||10,diff=newPts-oldPts;
+    if(diff!==0){
+      const adj={};completions.filter(c=>c.task_id===editingTaskId&&!c.points_voided).forEach(c=>{adj[c.user_id]=(adj[c.user_id]||0)+diff;});
+      const b=Object.entries(adj).map(([uid,d])=>({sql:'UPDATE users SET points=MAX(0,points+?) WHERE id=?',args:[d,uid]}));
+      if(b.length)await tursoBatch(b);
+    }
+    closeEditModal();await loadData();
+  }catch(e){alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+// ══════════════════════════════════════════════════════════════
+// COMPLETE TASK
+// ══════════════════════════════════════════════════════════════
+async function completeTask(task,soloClai,slotIdx=0,oKey=null,overrideReason=null){
+  if(!currentUser)return;
+  const key=oKey||occurrenceKey(task,slotIdx);
+  setSyncing(true);
+  try{
+    const stmts=[{sql:'INSERT INTO completions(id,task_id,user_id,semester,occurrence_key,slot_index,solo_claimed,override_reason) VALUES(?,?,?,?,?,?,?,?)',
+      args:[uuid(),task.id,currentUser.id,semester(),key,slotIdx,soloClai?1:0,overrideReason||null]}];
+    if(currentUser.role==='student') stmts.push({sql:'UPDATE users SET points=points+? WHERE id=?',args:[task.points_value,currentUser.id]});
+    else stmts.push({sql:'UPDATE users SET completion_count=completion_count+1 WHERE id=?',args:[currentUser.id]});
+    await tursoBatch(stmts);
+    if(currentUser.role==='student') currentUser.points=(currentUser.points||0)+task.points_value;
+    else currentUser.completion_count=(currentUser.completion_count||0)+1;
+    if(overrideReason){await sendNotification({to_campus:activeCampus,to_role:'admin',type:'override',title:'One-per-day Override',body:`${currentUser.name} completed extra slot of "${task.title}". Reason: ${overrideReason}`,icon:'⚠️',campus:activeCampus});}
+    await loadData();if(currentUser.role==='student')celebrate(task);
+  }catch(e){if(e.message?.includes('UNIQUE'))alert('Already completed this slot!');else alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+function closeOverrideModal(){$('override-modal').classList.remove('show');overridingTask=null;overridingSlot=null;}
+async function submitOverride(){
+  const reason=($('override-reason').value||'').trim();if(!reason)return alert('Please explain why.');
+  const task=overridingTask,{slotIdx,oKey}=overridingSlot||{};
+  closeOverrideModal();
+  const newKey=(oKey||occurrenceKey(task,slotIdx||0))+`-over-${Date.now()}`;
+  await completeTask(task,false,slotIdx||0,newKey,reason);
+}
+ 
+// ══════════════════════════════════════════════════════════════
+// DECLINE / HELP
+// ══════════════════════════════════════════════════════════════
+function openDeclineModal(task){decliningTask=task;$('decline-warning').textContent=`Declining costs you ${task.points_value*2} points. The task will open up for others.`;$('decline-reason').value='';$('decline-modal').classList.add('show');}
+function closeDeclineModal(){$('decline-modal').classList.remove('show');decliningTask=null;}
+async function submitDecline(){
+  const reason=($('decline-reason').value||'').trim();if(!reason)return alert('Please write a reason.');
+  const task=decliningTask,deduction=task.points_value*2;
+  setSyncing(true);
+  try{
+    await tursoBatch([
+      {sql:'INSERT INTO task_rejections(id,task_id,rejected_by,reason,points_deducted) VALUES(?,?,?,?,?)',args:[uuid(),task.id,currentUser.id,reason,deduction]},
+      {sql:'UPDATE tasks SET task_type=?,assign_to=NULL WHERE id=?',args:['everyone',task.id]},
+      {sql:'UPDATE users SET points=MAX(0,points-?) WHERE id=?',args:[deduction,currentUser.id]},
+    ]);
+    closeDeclineModal();await loadData();
+  }catch(e){alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+async function requestHelp(task){
+  if(!confirm(`Alert admin/staff that you need help with "${task.title}"?`))return;
+  setSyncing(true);
+  try{
+    await tursoFetch('INSERT INTO help_requests(id,task_id,user_id,campus) VALUES(?,?,?,?)',[uuid(),task.id,currentUser.id,activeCampus]);
+    await sendNotification({to_campus:activeCampus,to_role:'all',type:'system',title:'Help Requested',body:`${currentUser.name} needs help with: "${task.title}"`,icon:'🆘',campus:activeCampus});
+    await loadData();alert('Done! Admin/staff notified 🆘');
+  }catch(e){alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+async function resolveHelp(helpId){
+  setSyncing(true);
+  try{await tursoFetch('UPDATE help_requests SET resolved=1,resolved_by=?,resolved_at=? WHERE id=?',[currentUser.id,new Date().toISOString(),helpId]);await loadData();}
+  catch(e){alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+// ══════════════════════════════════════════════════════════════
+// VOID POINTS
+// ══════════════════════════════════════════════════════════════
+function openVoidModal(comp,taskTitle){voidingCompletion=comp;$('void-desc').textContent=`Void points for "${taskTitle}"?`;$('void-reason').value='';$('void-modal').classList.add('show');}
+function closeVoidModal(){$('void-modal').classList.remove('show');voidingCompletion=null;}
+async function submitVoid(){
+  const reason=($('void-reason').value||'').trim();if(!reason)return alert('Reason required.');
+  const comp=voidingCompletion,task=tasks.find(t=>t.id===comp.task_id);
+  setSyncing(true);
+  try{
+    await tursoBatch([
+      {sql:'UPDATE completions SET points_voided=1,void_reason=? WHERE id=?',args:[reason,comp.id]},
+      {sql:'UPDATE users SET points=MAX(0,points-?) WHERE id=?',args:[task?.points_value||0,comp.user_id]},
+    ]);
+    await sendNotification({to_user:comp.user_id,type:'void',title:'Points Voided',body:`Your points for "${task?.title||'a task'}" were voided. Reason: ${reason}`,icon:'⚠️',campus:activeCampus});
+    closeVoidModal();await loadData();
+  }catch(e){alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+// ══════════════════════════════════════════════════════════════
+// POINT ADJUSTMENTS
+// ══════════════════════════════════════════════════════════════
+function openAdjModal(mode){
+  adjMode=mode;adjTargetUser=profileUser;
+  $('adj-modal-title').textContent=mode==='bonus'?'⭐ Award Bonus Points':'📉 Deduct Points';
+  $('adj-submit-btn').textContent=mode==='bonus'?'Award Points':'Deduct Points';
+  $('adj-submit-btn').className=`btn ${mode==='bonus'?'btn-success':'btn-danger'}`;
+  $('adj-pts').value='10';$('adj-reason').value='';$('adj-modal').classList.add('show');
+}
+function closeAdjModal(){$('adj-modal').classList.remove('show');adjMode=null;adjTargetUser=null;}
+async function submitAdj(){
+  const pts=Number($('adj-pts').value)||0,reason=($('adj-reason').value||'').trim();
+  if(pts<=0)return alert('Enter a points amount.');if(!reason)return alert('Reason required.');
+  const isBonus=adjMode==='bonus';
+  setSyncing(true);
+  try{
+    await tursoBatch([
+      {sql:'INSERT INTO point_adjustments(id,user_id,campus,type,points,reason,issued_by) VALUES(?,?,?,?,?,?,?)',args:[uuid(),adjTargetUser.id,activeCampus,adjMode,pts,reason,currentUser.id]},
+      isBonus?{sql:'UPDATE users SET points=points+? WHERE id=?',args:[pts,adjTargetUser.id]}:{sql:'UPDATE users SET points=MAX(0,points-?) WHERE id=?',args:[pts,adjTargetUser.id]},
+    ]);
+    await sendNotification({to_user:adjTargetUser.id,type:'message',title:isBonus?'Bonus Points Awarded':'Points Deducted',body:`${isBonus?'+'+pts:'−'+pts} pts — ${reason}`,icon:isBonus?'⭐':'📉',campus:activeCampus});
+    closeAdjModal();await loadData();
+  }catch(e){alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+// ══════════════════════════════════════════════════════════════
+// BONUS PITCHES
+// ══════════════════════════════════════════════════════════════
+async function submitPitch(){
+  const title=($('pitch-title').value||'').trim(),desc=($('pitch-desc').value||'').trim();
+  if(!title)return alert('Please give your pitch a title.');if(desc.length<20)return alert('Please write a more detailed explanation.');
+  setSyncing(true);
+  try{
+    await tursoFetch('INSERT INTO bonus_pitches(id,user_id,campus,title,description,points_requested) VALUES(?,?,?,?,?,?)',[uuid(),currentUser.id,activeCampus,title,desc,Number($('pitch-pts').value)||10]);
+    $('pitch-title').value='';$('pitch-desc').value='';$('pitch-pts').value='10';await loadData();alert('Pitch submitted! ⭐');
+  }catch(e){alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+function openReviewModal(pitch){
+  reviewingPitch=pitch;const u=users.find(x=>x.id===pitch.user_id);
+  $('review-pitch-detail').innerHTML=`<strong>${u?.name||'?'}</strong> is pitching:<br><br><strong>${pitch.title}</strong><br><br>${pitch.description}<br><br><em>Asking for <strong>${pitch.points_requested} points</strong>.</em>`;
+  $('review-pts').value=pitch.points_requested;$('review-note').value='';$('review-pitch-modal').classList.add('show');
+}
+function closeReviewModal(){$('review-pitch-modal').classList.remove('show');reviewingPitch=null;}
+async function decidePitch(decision){
+  if(!reviewingPitch)return;
+  const pts=Number($('review-pts').value)||0,note=($('review-note').value||'').trim()||null;
+  if(decision==='approved'&&pts<=0)return alert('Enter points to award.');
+  setSyncing(true);
+  try{
+    const stmts=[{sql:'UPDATE bonus_pitches SET status=?,points_awarded=?,admin_note=?,reviewed_by=?,reviewed_at=? WHERE id=?',args:[decision,decision==='approved'?pts:0,note,currentUser.id,new Date().toISOString(),reviewingPitch.id]}];
+    if(decision==='approved'){
+      stmts.push({sql:'UPDATE users SET points=points+? WHERE id=?',args:[pts,reviewingPitch.user_id]});
+      stmts.push({sql:'INSERT INTO point_adjustments(id,user_id,campus,type,points,reason,issued_by) VALUES(?,?,?,?,?,?,?)',args:[uuid(),reviewingPitch.user_id,activeCampus,'bonus',pts,`Pitch approved: ${reviewingPitch.title}`,currentUser.id]});
+    }
+    await tursoBatch(stmts);
+    await sendNotification({to_user:reviewingPitch.user_id,type:'pitch_result',title:decision==='approved'?'Pitch Approved! ⭐':'Pitch Not Approved',body:decision==='approved'?`Your pitch "${reviewingPitch.title}" was approved for ${pts} points!${note?' Note: '+note:''}` :`Your pitch "${reviewingPitch.title}" was not approved.${note?' Note: '+note:''}`,icon:decision==='approved'?'⭐':'📋',campus:activeCampus});
+    closeReviewModal();await loadData();
+  }catch(e){alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+// ══════════════════════════════════════════════════════════════
+// MESSAGES + NOTIFICATIONS
+// ══════════════════════════════════════════════════════════════
+async function addMessage(){
+  const date=($('msg-date').value||'').trim(),body=($('msg-body').value||'').trim();
+  if(!date||!body)return alert('Date and message required.');
+  setSyncing(true);
+  try{
+    await tursoFetch('INSERT INTO daily_messages(id,campus,show_date,title,body,icon,created_by) VALUES(?,?,?,?,?,?,?)',[uuid(),activeCampus,date,($('msg-title').value||'').trim()||null,body,($('msg-icon').value||'').trim()||'📢',currentUser.id]);
+    $('msg-date').value='';$('msg-title').value='';$('msg-body').value='';$('msg-icon').value='';await loadData();
+  }catch(e){alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+async function deleteMessage(id){if(!confirm('Delete?'))return;setSyncing(true);try{await tursoFetch('DELETE FROM daily_messages WHERE id=?',[id]);await loadData();}catch(e){alert('Error: '+e.message);}setSyncing(false);}
+ 
+function openMsgEditModal(msg){editingMsgId=msg.id;$('medit-date').value=msg.show_date||'';$('medit-title').value=msg.title||'';$('medit-body').value=msg.body||'';$('medit-icon').value=msg.icon||'📢';$('msg-edit-modal').classList.add('show');}
+function closeMsgEditModal(){$('msg-edit-modal').classList.remove('show');editingMsgId=null;}
+async function saveMsgEdit(){
+  if(!editingMsgId)return;const date=($('medit-date').value||'').trim(),body=($('medit-body').value||'').trim();if(!date||!body)return alert('Date and message required.');
+  setSyncing(true);try{await tursoFetch('UPDATE daily_messages SET show_date=?,title=?,body=?,icon=? WHERE id=?',[date,($('medit-title').value||'').trim()||null,body,($('medit-icon').value||'').trim()||'📢',editingMsgId]);closeMsgEditModal();await loadData();}catch(e){alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+function onDmTargetChange(){$('dm-user-field').classList.toggle('hidden',$('dm-target').value!=='specific');}
+function onStaffDmTargetChange(){$('sdm-user-field').classList.toggle('hidden',$('sdm-target').value!=='specific');}
+ 
+async function sendDirectMessage(){
+  const target=$('dm-target').value,body=($('dm-body').value||'').trim();if(!body)return alert('Please write a message.');
+  const notif={type:'message',body,icon:'💬',campus:activeCampus};
+  if(target==='campus'){notif.to_campus=activeCampus;notif.to_role='all';}
+  else if(target==='students'){notif.to_campus=activeCampus;notif.to_role='students';}
+  else if(target==='staff'){notif.to_campus=activeCampus;notif.to_role='staff';}
+  else{notif.to_user=$('dm-user').value;if(!notif.to_user)return alert('Select a person.');}
+  setSyncing(true);try{await sendNotification(notif);$('dm-body').value='';await loadData();alert('Sent!');}catch(e){alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+async function staffSendMessage(){
+  const target=$('sdm-target').value,body=($('sdm-body').value||'').trim();if(!body)return alert('Please write a message.');
+  const notif={type:'message',body,icon:'💬',campus:activeCampus};
+  if(target==='campus'){notif.to_campus=activeCampus;notif.to_role='all';}
+  else if(target==='students'){notif.to_campus=activeCampus;notif.to_role='students';}
+  else if(target==='admin'){notif.to_campus=activeCampus;notif.to_role='admin';}
+  else{notif.to_user=$('sdm-user').value;if(!notif.to_user)return alert('Select a person.');}
+  setSyncing(true);try{await sendNotification(notif);$('sdm-body').value='';await loadData();alert('Sent!');}catch(e){alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+async function sendNotification(n){
+  await tursoFetch('INSERT INTO notifications(id,from_user,to_user,to_campus,to_role,type,title,body,icon,thread_id,ref_id,campus) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
+    [uuid(),currentUser?.id||null,n.to_user||null,n.to_campus||null,n.to_role||null,n.type||'message',n.title||null,n.body,n.icon||'📢',n.thread_id||null,n.ref_id||null,n.campus||activeCampus]);
+}
+ 
+// ══════════════════════════════════════════════════════════════
+// REPLY
+// ══════════════════════════════════════════════════════════════
+function openReplyModal(notif){
+  replyingNotif=notif;const fromUser=users.find(u=>u.id===notif.from_user);
+  $('reply-thread-preview').innerHTML=`<strong>${fromUser?.name||'Team'}</strong>: ${notif.body}`;
+  $('reply-body').value='';$('reply-modal').classList.add('show');
+}
+function closeReplyModal(){$('reply-modal').classList.remove('show');replyingNotif=null;}
+async function submitReply(){
+  const body=($('reply-body').value||'').trim();if(!body)return alert('Please write a reply.');
+  const n=replyingNotif,toUser=n.from_user&&n.from_user!==currentUser?.id?n.from_user:null;
+  setSyncing(true);
+  try{
+    await tursoFetch('INSERT INTO notifications(id,from_user,to_user,to_campus,to_role,type,body,icon,thread_id,campus) VALUES(?,?,?,?,?,?,?,?,?,?)',
+      [uuid(),currentUser.id,toUser,toUser?null:n.to_campus,toUser?null:n.to_role,'message',body,'💬',n.id,activeCampus]);
+    closeReplyModal();await loadData();
+  }catch(e){alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+// ══════════════════════════════════════════════════════════════
+// MOTD
+// ══════════════════════════════════════════════════════════════
+function checkMotd(){
+  const td=today(),msg=dailyMessages.find(m=>m.campus===activeCampus&&m.show_date===td);if(!msg)return;
+  const key=`motd_seen_${currentUser.id}_${td}`;if(localStorage.getItem(key))return;
+  $('motd-icon').textContent=msg.icon||'📢';$('motd-title').textContent=msg.title||'Message from your team';$('motd-body').textContent=msg.body;$('motd-modal').classList.add('show');
+}
+function dismissMotd(){localStorage.setItem(`motd_seen_${currentUser.id}_${today()}`,'1');$('motd-modal').classList.remove('show');}
+ 
+// ══════════════════════════════════════════════════════════════
+// PROFILE MODAL
+// ══════════════════════════════════════════════════════════════
+function openProfileModal(user){
+  profileUser=user;
+  const av=$('profile-avatar');av.style.background=user.avatar_color;av.style.boxShadow=`0 0 20px ${user.avatar_color}55`;av.textContent=initials(user.name);
+  $('profile-name').textContent=user.name;$('profile-meta').textContent=`@${user.username} · ${user.role} · ${user.campus}`;
+  const isStudent=user.role==='student';
+  $('profile-adj-btns').style.display=isStudent?'flex':'none';
+  $('profile-pitches-section').style.display=isStudent?'':'none';
+  $('profile-adjs-section').style.display=isStudent?'':'none';
+  $('profile-reset-pw-btn').style.display=(currentUser.role==='admin'||(currentUser.role==='staff'&&isStudent))?'':'none';
+  const comps=completions.filter(c=>c.user_id===user.id).map(c=>({...c,task:tasks.find(t=>t.id===c.task_id)})).filter(c=>c.task).sort((a,b)=>new Date(b.completed_at)-new Date(a.completed_at));
+  const compEl=$('profile-completions');compEl.innerHTML=comps.length?'':'<p class="profile-empty">No completions yet.</p>';
+  comps.forEach(c=>{
+    const r=document.createElement('div');r.className=c.points_voided?'adj-row voided':'hist-row';
+    r.innerHTML=`${c.points_voided?'<span style="color:#C0294A">⚠️</span>':'<span class="hist-check">✓</span>'}<span class="hist-title">${c.task.title}</span><span class="hist-pts">${c.points_voided?'voided':'+'+c.task.points_value+'pt'}</span><span class="hist-date">${fmtDate(c.completed_at)}</span>`;
+    if(isStudent&&!c.points_voided){const vb=document.createElement('button');vb.className='btn btn-danger btn-xs';vb.textContent='Void';vb.onclick=()=>openVoidModal(c,c.task.title);r.appendChild(vb);}
+    compEl.appendChild(r);
+  });
+  if(isStudent){
+    const pitches=bonusPitches.filter(p=>p.user_id===user.id).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+    const pitchEl=$('profile-pitches');pitchEl.innerHTML=pitches.length?'':'<p class="profile-empty">No pitches yet.</p>';
+    pitches.forEach(p=>{
+      const sc=p.status==='approved'?'pitch-status-approved':p.status==='denied'?'pitch-status-denied':'pitch-status-pending';
+      const sl=p.status==='approved'?`✓ ${p.points_awarded}pts`:p.status==='denied'?'✕ Denied':'⏳ Pending';
+      const r=document.createElement('div');r.className=`pitch-row ${p.status==='approved'?'approved':p.status==='denied'?'denied':''}`;r.style.padding='.65rem .9rem';
+      r.innerHTML=`<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:.84rem">${p.title}</div><div style="font-size:.74rem;color:var(--muted)">Asked ${p.points_requested}pts · ${fmtDate(p.created_at)}</div></div><span class="pitch-status ${sc}">${sl}</span>`;
+      pitchEl.appendChild(r);
+    });
+    const adjs=pointAdjs.filter(a=>a.user_id===user.id).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+    const adjEl=$('profile-adjustments');adjEl.innerHTML=adjs.length?'':'<p class="profile-empty">No adjustments yet.</p>';
+    adjs.forEach(a=>{
+      const isB=a.type==='bonus';const r=document.createElement('div');r.className=`adj-row ${isB?'bonus':'deduct'}`;r.style.padding='.65rem .9rem';
+      r.innerHTML=`<span class="adj-icon">${isB?'⭐':'📉'}</span><div class="adj-info"><div class="adj-title">${isB?'Bonus':'Deduction'}</div><div class="adj-reason">${a.reason}</div></div><span class="adj-pts ${isB?'plus':'minus'}">${isB?'+':'−'}${Math.abs(a.points)}pt</span><span class="adj-date">${fmtDate(a.created_at)}</span>`;
+      adjEl.appendChild(r);
+    });
+  }
+  $('profile-modal').classList.add('show');
+}
+function closeProfileModal(){$('profile-modal').classList.remove('show');profileUser=null;}
+ 
+// ══════════════════════════════════════════════════════════════
+// SEMESTER RESET
+// ══════════════════════════════════════════════════════════════
+async function resetSemester(){
+  const label=prompt('Label for this semester:',semester());if(!label)return;
+  const sw=campusUsers('student');if(!sw.length)return alert('No students to reset.');
+  if(!confirm(`Reset all ${CAMPUS_LABELS[activeCampus]} student points and history for "${label}"?\nThis cannot be undone.`))return;
+  setSyncing(true);
+  try{
+    const ids=sw.map(u=>u.id),batches=ids.map(id=>({sql:'UPDATE users SET points=0 WHERE id=?',args:[id]}));
+    ids.forEach(id=>{['completions','point_adjustments','bonus_pitches','help_requests'].forEach(tbl=>batches.push({sql:`DELETE FROM ${tbl} WHERE user_id=?`,args:[id]}));batches.push({sql:'DELETE FROM task_rejections WHERE rejected_by=?',args:[id]});});
+    batches.push({sql:'INSERT INTO semester_resets(id,semester_label,reset_by,campus) VALUES(?,?,?,?)',args:[uuid(),`${label} (${activeCampus})`,currentUser.id,activeCampus]});
+    await tursoBatch(batches);await loadData();alert(`✅ ${CAMPUS_LABELS[activeCampus]} semester reset!`);
+  }catch(e){alert('Error: '+e.message);}setSyncing(false);
+}
+ 
+// ══════════════════════════════════════════════════════════════
+// CONFETTI + CELEBRATION
+// ══════════════════════════════════════════════════════════════
+let confettiAnim=null;
+function launchConfetti(){
+  const canvas=$('confetti-canvas');canvas.style.display='block';canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+  const ctx=canvas.getContext('2d'),colors=['#F4A7B9','#F9D0DC','#C8E6DA','#A8D8EA','#FFEAA0','#D4B8E0','#E8526E','#5CBF94'];
+  const pieces=Array.from({length:140},()=>({x:Math.random()*canvas.width,y:-10-Math.random()*100,w:8+Math.random()*8,h:5+Math.random()*6,color:colors[Math.floor(Math.random()*colors.length)],rot:Math.random()*Math.PI*2,rotV:(Math.random()-.5)*.15,vy:3+Math.random()*4,vx:(Math.random()-.5)*3,alpha:1}));
+  const draw=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);pieces.forEach(p=>{ctx.save();ctx.globalAlpha=p.alpha;ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.color;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();p.y+=p.vy;p.x+=p.vx;p.rot+=p.rotV;if(p.y>canvas.height*.75)p.alpha-=.02;});
+  const alive=pieces.filter(p=>p.alpha>0);if(alive.length){pieces.length=0;pieces.push(...alive);confettiAnim=requestAnimationFrame(draw);}else canvas.style.display='none';};
+  if(confettiAnim)cancelAnimationFrame(confettiAnim);confettiAnim=requestAnimationFrame(draw);
+}
+let celebTimeout=null;
+function celebrate(task){$('celeb-task-name').textContent=`"${task.title}"`;$('celeb-pts').textContent=`+${task.points_value} pts ✨`;$('celebration').classList.add('show');launchConfetti();if(celebTimeout)clearTimeout(celebTimeout);celebTimeout=setTimeout(closeCelebration,4500);}
+function closeCelebration(){$('celebration').classList.remove('show');clearTimeout(celebTimeout);}
+ 
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+buildSwatches('color-swatches-w',selectedColorW,c=>{selectedColorW=c;});
+buildSwatches('color-swatches-s',selectedColorS,c=>{selectedColorS=c;});
+buildSwatches('color-swatches-sw',selectedColorSW,c=>{selectedColorSW=c;});
+$('dm-target').addEventListener('change',onDmTargetChange);
+loadData();
+</script>
+</body>
+</html>
+ 
