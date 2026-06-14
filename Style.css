@@ -23,9 +23,9 @@ body {
     color: blue;
             }
   a:hover {
-    color: black;
+    background-color: black;
           }
   a:active {
-    color: yellow;
+    color: red;
            }
 }
