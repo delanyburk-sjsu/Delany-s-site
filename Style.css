@@ -3,17 +3,17 @@ h1 {
   padding: 10px;
   border: 2px solid purple;
   margin: auto;
-  text-align: center
+  text-align: center;
 }
 body {
   p.eat-drink, p.visit {
     text-indent: 10%;
   }
   .visit {
-    color: red
+    color: red;
   }
   .restaurants li:nth-hcild(3) {
     text-transform: uppercase;
-    color: blue
+    color: blue;
   }
 }
