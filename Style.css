@@ -6,6 +6,7 @@ h1 {
   text-align: center
 }
 body {
-  p.eat-drink, p.visit {text-indent: 10%;
-                         }
+  p.eat-drink, p.visit {
+    text-indent: 10%;
+  }
 }
