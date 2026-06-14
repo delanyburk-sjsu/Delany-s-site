@@ -12,7 +12,7 @@ body {
   .visit {
     color: red;
   }
-  .restaurants :nth-child(3) {
+  .restaurants li:nth-child(3) {
   text-transform: uppercase;
   color: blue;
 }
