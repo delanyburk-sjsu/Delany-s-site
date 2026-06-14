@@ -1,3 +1,4 @@
+/*centers the h1 block, adds padding, a visible border, and centers text within the block*/
 h1 {
   width: 50%;
   padding: 10px;
@@ -6,25 +7,32 @@ h1 {
   text-align: center;
 }
 body {
+  /*indents paragraphs with the class name "eat-drink" and "visit"*/
   p.eat-drink, p.visit {
     text-indent: 10%;
   }
+  /*changes the color of all text with the class name "visit" to red*/
   .visit {
     color: red;
   }
+  /*changes the 3rd item in the list with the class name "restaurants" to all uppercase letters, and blue*/
   .restaurants li:nth-child(3) {
   text-transform: uppercase;
   color: blue;
 }
+  /*changes the link state green*/
   a:link {
     color: green;
          }
+  /*changes the link blue once visited*/
   a:visited {
     color: blue;
             }
+  /*changes the background color of the link black when mouse hovers over it*/
   a:hover {
     background-color: black;
           }
+  /*changes the color of the link to red when the user is actively clicking on it*/
   a:active {
     color: red;
            }
