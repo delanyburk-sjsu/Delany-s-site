@@ -6,7 +6,6 @@ h1 {
   margin: auto;
   text-align: center;
 }
-body {
   /*indents paragraphs with the class name "eat-drink" and "visit"*/
   p.eat-drink, p.visit {
     text-indent: 10%;
@@ -36,4 +35,3 @@ body {
   a:active {
     color: red;
            }
-}
