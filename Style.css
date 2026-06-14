@@ -9,6 +9,11 @@ body {
   p.eat-drink, p.visit {
     text-indent: 10%;
   }
-  .visit {color: orange
-         }
+  .visit {
+    color: red
+  }
+  .restaurants li:nth-hcild(3) {
+    text-transform: uppercase;
+    color: blue
+  }
 }
