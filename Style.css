@@ -12,8 +12,8 @@ body {
   .visit {
     color: red;
   }
-  ul.restaurants li:nth-hcild(3) {
-    text-transform: uppercase;
-    color: blue;
-  }
+  .restaurants :nth-child(3) {
+  text-transform: uppercase;
+  color: blue;
+}
 }
