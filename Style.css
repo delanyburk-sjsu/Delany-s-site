@@ -17,15 +17,15 @@ body {
   color: blue;
 }
   a:link {
-    color: green
+    color: green;
          }
   a:visited {
-    color: blue
+    color: blue;
             }
   a:hover {
-    color: black
+    color: black;
           }
   a:active {
-    color: yellow
+    color: yellow;
            }
 }
