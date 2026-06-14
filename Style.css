@@ -5,3 +5,7 @@ h1 {
   margin: auto;
   text-align: center
 }
+.eat-drink p {text-indent: 10%;
+           }
+.visit p {text-indent: 10%;
+       }
