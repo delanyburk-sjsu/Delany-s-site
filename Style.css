@@ -9,4 +9,6 @@ body {
   p.eat-drink, p.visit {
     text-indent: 10%;
   }
+  .visit {color: orange
+         }
 }
